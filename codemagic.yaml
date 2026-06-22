@@ -4,13 +4,14 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     environment:
+      unity: 6000.5.0f1
+      xcode: latest
       vars:
-        UNITY_VERSION: 6000.5.0f1
         BUNDLE_ID: com.dovyllis.vrpaino
     scripts:
       - name: Build Unity iOS Xcode project
         script: |
-          /Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity \
+          unity-editor \
             -batchmode \
             -nographics \
             -quit \
@@ -34,13 +35,11 @@ workflows:
             ONLY_ACTIVE_ARCH=NO \
             -derivedDataPath DerivedData
 
-          # Package .app into unsigned .ipa
           APP_PATH=$(find DerivedData -name "*.app" | head -1)
           mkdir -p Payload
           cp -r "$APP_PATH" Payload/
           zip -r vrpaino.ipa Payload/
-          echo "IPA created: vrpaino.ipa"
+          echo "Done: vrpaino.ipa"
 
     artifacts:
       - Build/iOS/vrpaino.ipa
-      - /tmp/xcodebuild_logs/*.log
