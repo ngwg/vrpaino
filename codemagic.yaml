@@ -2,61 +2,45 @@ workflows:
   unity-ios-build:
     name: Unity iOS Build
     max_build_duration: 120
+    instance_type: mac_mini_m2
     environment:
-      unity: 6.1.0
-      ios_signing:
-        distribution_type: development
-        bundle_identifier: com.dovyllis.vrpaino
       vars:
         UNITY_VERSION: 6000.5.0f1
         BUNDLE_ID: com.dovyllis.vrpaino
-        XCODE_PROJECT: Build/iOS/Unity-iPhone.xcodeproj
     scripts:
-      - name: Activate Unity
+      - name: Build Unity iOS Xcode project
         script: |
-          unity-editor \
+          /Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity \
             -batchmode \
-            -quit \
-            -logFile /dev/stdout \
-            -serial $UNITY_SERIAL \
-            -username $UNITY_EMAIL \
-            -password $UNITY_PASSWORD
-
-      - name: Build Unity iOS project
-        script: |
-          unity-editor \
-            -batchmode \
+            -nographics \
             -quit \
             -logFile /dev/stdout \
             -projectPath . \
             -buildTarget iOS \
             -executeMethod BuildScript.BuildIOS
 
-      - name: Build IPA with xcodebuild
+      - name: Build unsigned IPA
         script: |
+          cd Build/iOS
           xcodebuild \
-            -project "$XCODE_PROJECT" \
+            -project Unity-iPhone.xcodeproj \
             -scheme Unity-iPhone \
             -configuration Release \
-            -archivePath Build/iOS/vrpaino.xcarchive \
-            archive \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM=$APPLE_TEAM_ID
+            -sdk iphoneos \
+            build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            -derivedDataPath DerivedData
 
-          xcodebuild \
-            -exportArchive \
-            -archivePath Build/iOS/vrpaino.xcarchive \
-            -exportOptionsPlist exportOptions.plist \
-            -exportPath Build/IPA
+          # Package .app into unsigned .ipa
+          APP_PATH=$(find DerivedData -name "*.app" | head -1)
+          mkdir -p Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r vrpaino.ipa Payload/
+          echo "IPA created: vrpaino.ipa"
 
     artifacts:
-      - Build/IPA/*.ipa
+      - Build/iOS/vrpaino.ipa
       - /tmp/xcodebuild_logs/*.log
-
-    publishing:
-      email:
-        recipients:
-          - dovyllis@gmail.com
-        notify:
-          success: true
-          failure: true
