@@ -1,0 +1,58 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Unity iOS
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Build with Unity
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: iOS
+          unityVersion: 6000.5.0f1
+          buildMethod: BuildScript.BuildIOS
+          allowDirtyBuild: true
+
+      - name: Package unsigned IPA
+        run: |
+          BUILD_PATH=$(find build -name "Unity-iPhone.xcodeproj" 2>/dev/null | head -1 | xargs dirname)
+          echo "Found project at: $BUILD_PATH"
+          cd "$BUILD_PATH"
+
+          xcodebuild \
+            -project Unity-iPhone.xcodeproj \
+            -scheme Unity-iPhone \
+            -configuration Release \
+            -sdk iphoneos \
+            build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath DerivedData
+
+          APP=$(find DerivedData -name "*.app" | grep -v ".dSYM" | head -1)
+          echo "App: $APP"
+          mkdir -p Payload
+          cp -r "$APP" Payload/
+          zip -r vrpaino.ipa Payload/
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: vrpaino-ipa
+          path: "**/vrpaino.ipa"
+          retention-days: 7
