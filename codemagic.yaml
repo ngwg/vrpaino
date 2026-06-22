@@ -1,0 +1,62 @@
+workflows:
+  unity-ios-build:
+    name: Unity iOS Build
+    max_build_duration: 120
+    environment:
+      unity: 6.1.0
+      ios_signing:
+        distribution_type: development
+        bundle_identifier: com.dovyllis.vrpaino
+      vars:
+        UNITY_VERSION: 6000.5.0f1
+        BUNDLE_ID: com.dovyllis.vrpaino
+        XCODE_PROJECT: Build/iOS/Unity-iPhone.xcodeproj
+    scripts:
+      - name: Activate Unity
+        script: |
+          unity-editor \
+            -batchmode \
+            -quit \
+            -logFile /dev/stdout \
+            -serial $UNITY_SERIAL \
+            -username $UNITY_EMAIL \
+            -password $UNITY_PASSWORD
+
+      - name: Build Unity iOS project
+        script: |
+          unity-editor \
+            -batchmode \
+            -quit \
+            -logFile /dev/stdout \
+            -projectPath . \
+            -buildTarget iOS \
+            -executeMethod BuildScript.BuildIOS
+
+      - name: Build IPA with xcodebuild
+        script: |
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme Unity-iPhone \
+            -configuration Release \
+            -archivePath Build/iOS/vrpaino.xcarchive \
+            archive \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM=$APPLE_TEAM_ID
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath Build/iOS/vrpaino.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath Build/IPA
+
+    artifacts:
+      - Build/IPA/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      email:
+        recipients:
+          - dovyllis@gmail.com
+        notify:
+          success: true
+          failure: true
