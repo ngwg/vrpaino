@@ -8,16 +8,22 @@ on:
 jobs:
   build:
     name: Build IPA from Xcode project
-    runs-on: macos-latest
+    # Pin the image so the build is not silently moved to macOS 26/Xcode 26.
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           lfs: true
 
       - name: Build unsigned IPA
         run: |
+          test -d Build/iOS/Unity-iPhone.xcodeproj || {
+            echo "Build/iOS/Unity-iPhone.xcodeproj is missing. Export the iOS project from Unity and commit it first."
+            exit 1
+          }
+
           cd Build/iOS
 
           xcodebuild \
@@ -31,15 +37,20 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             -derivedDataPath DerivedData
 
-          APP=$(find DerivedData -name "*.app" | grep -v ".dSYM" | head -1)
+          APP=$(find DerivedData -type d -name "*.app" -not -path "*.dSYM/*" -print -quit)
+          test -n "$APP" || {
+            echo "No .app bundle was produced by xcodebuild."
+            exit 1
+          }
+
           echo "Packaging: $APP"
           mkdir -p Payload
           cp -r "$APP" Payload/
-          zip -r vrpaino.ipa Payload/
+          ditto -c -k --sequesterRsrc --keepParent Payload vrpaino.ipa
           echo "Done"
 
       - name: Upload IPA
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: vrpaino-ipa
           path: Build/iOS/vrpaino.ipa
