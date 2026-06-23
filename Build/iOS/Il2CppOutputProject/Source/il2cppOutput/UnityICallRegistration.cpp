@@ -474,10 +474,6 @@ void RegisterAllStrippedInternalCalls()
 
 	//Start Registrations for type : UnityEngine.Application
 
-		//System.Boolean UnityEngine.Application::HasUserAuthorization(UnityEngine.UserAuthorization)
-		void Register_UnityEngine_Application_HasUserAuthorization();
-		Register_UnityEngine_Application_HasUserAuthorization();
-
 		//System.Boolean UnityEngine.Application::get_isBatchMode()
 		void Register_UnityEngine_Application_get_isBatchMode();
 		Register_UnityEngine_Application_get_isBatchMode();
@@ -498,10 +494,6 @@ void RegisterAllStrippedInternalCalls()
 		void Register_UnityEngine_Application_get_targetFrameRate();
 		Register_UnityEngine_Application_get_targetFrameRate();
 
-		//System.IntPtr UnityEngine.Application::RequestUserAuthorization_Injected(UnityEngine.UserAuthorization)
-		void Register_UnityEngine_Application_RequestUserAuthorization_Injected();
-		Register_UnityEngine_Application_RequestUserAuthorization_Injected();
-
 		//System.Void UnityEngine.Application::OpenURL_Injected(UnityEngine.Bindings.ManagedSpanWrapper&)
 		void Register_UnityEngine_Application_OpenURL_Injected();
 		Register_UnityEngine_Application_OpenURL_Injected();
@@ -515,18 +507,6 @@ void RegisterAllStrippedInternalCalls()
 		Register_UnityEngine_Application_get_platform();
 
 	//End Registrations for type : UnityEngine.Application
-
-	//Start Registrations for type : UnityEngine.AsyncOperation
-
-		//System.Void UnityEngine.AsyncOperation::InternalDestroy(System.IntPtr)
-		void Register_UnityEngine_AsyncOperation_InternalDestroy();
-		Register_UnityEngine_AsyncOperation_InternalDestroy();
-
-		//System.Void UnityEngine.AsyncOperation::InternalSetManagedObject(System.IntPtr,UnityEngine.AsyncOperation)
-		void Register_UnityEngine_AsyncOperation_InternalSetManagedObject();
-		Register_UnityEngine_AsyncOperation_InternalSetManagedObject();
-
-	//End Registrations for type : UnityEngine.AsyncOperation
 
 	//Start Registrations for type : UnityEngine.Awaitable
 

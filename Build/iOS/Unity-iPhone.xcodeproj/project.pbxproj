@@ -86,6 +86,7 @@
 		7AFB3C9D357B37F076090706 /* KeyboardViews+iOS+Glass.h in Headers */ = {isa = PBXBuildFile; fileRef = D70E25AB46FCE27185ABF561 /* KeyboardViews+iOS+Glass.h */; };
 		7B37BCD52E8EB3E300EBD088 /* UnityRuntime.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7B079BAA2E828D2B00C8A203 /* UnityRuntime.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7C058CAE70F713F7AE4E6167 /* UnityScene.h in Headers */ = {isa = PBXBuildFile; fileRef = DD6123A9B450B0AB9F525AD2 /* UnityScene.h */; };
+		7C182E90DA3BD7288248C635 /* CameraPermission.mm in Sources */ = {isa = PBXBuildFile; fileRef = FDB85377A003E4AE33B5FC5E /* CameraPermission.mm */; };
 		7F4E05AB2717219200A2CBE4 /* libGameAssembly.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F4E05A02717216D00A2CBE4 /* libGameAssembly.a */; };
 		81044980025CF0C90896BB52 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5358B0594857BFF1F3D62D92 /* Security.framework */; };
 		826E40C67FAA509B29A0EFA3 /* IUnityGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 30347B5D7991A325732A4F10 /* IUnityGraphics.h */; };
@@ -671,6 +672,7 @@
 		FAFE6F25F97E0825A99B77C2 /* Generics__4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Generics__4.cpp; path = Il2CppOutputProject/Source/il2cppOutput/Generics__4.cpp; sourceTree = SOURCE_ROOT; };
 		FB086F6145558D70FC612B3B /* UnityRendering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UnityRendering.h; path = Classes/Unity/UnityRendering.h; sourceTree = SOURCE_ROOT; };
 		FCDB29CB220336A9EACC1FB5 /* Unity.InputSystem__6.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Unity.InputSystem__6.cpp; path = Il2CppOutputProject/Source/il2cppOutput/Unity.InputSystem__6.cpp; sourceTree = SOURCE_ROOT; };
+		FDB85377A003E4AE33B5FC5E /* CameraPermission.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = CameraPermission.mm; path = Libraries/Plugins/iOS/CameraPermission.mm; sourceTree = SOURCE_ROOT; };
 		FE25FE39E021CF2F05F90E16 /* UnityAppController+Rendering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UnityAppController+Rendering.h"; path = "Classes/UnityAppController+Rendering.h"; sourceTree = SOURCE_ROOT; };
 		FEA0BE273F1825F1BE7B7B69 /* IUnityEventQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IUnityEventQueue.h; path = Classes/Unity/IUnityEventQueue.h; sourceTree = SOURCE_ROOT; };
 		FEFF7B4D5BE7A4AB429E1676 /* Generics__27.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Generics__27.cpp; path = Il2CppOutputProject/Source/il2cppOutput/Generics__27.cpp; sourceTree = SOURCE_ROOT; };
@@ -1212,6 +1214,14 @@
 			path = iOS;
 			sourceTree = "<group>";
 		};
+		53D667C6AFCF5C846FB3B413 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				FDB85377A003E4AE33B5FC5E /* CameraPermission.mm */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
 		5623C57817FDCB0800090B9E /* Unity-iPhone Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1335,6 +1345,7 @@
 		D8A1C7220E80637F000160D3 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				E65BCBDDB23DA191911454C2 /* Plugins */,
 				0DB64C2E13F03F7FFEA29216 /* com.unity.inputsystem */,
 				C63B33A2B4E66BC2927EB1FF /* Il2CppOptions.cpp */,
 				46631CE85DA24538DC1E6004 /* RegisterFeatures.cpp */,
@@ -1343,6 +1354,14 @@
 			);
 			path = Libraries;
 			sourceTree = SOURCE_ROOT;
+		};
+		E65BCBDDB23DA191911454C2 /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				53D667C6AFCF5C846FB3B413 /* iOS */,
+			);
+			path = Plugins;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -1620,6 +1639,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C182E90DA3BD7288248C635 /* CameraPermission.mm in Sources */,
 				030A68812E193A334BDD7087 /* iOSStepCounter.mm in Sources */,
 				5F359CE67EE9054F80A18BF2 /* DeviceInfo.cpp in Sources */,
 				77C0894FC16BA5631139FC8F /* StoreReview.m in Sources */,

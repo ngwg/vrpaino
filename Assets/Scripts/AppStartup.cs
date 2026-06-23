@@ -1,10 +1,19 @@
 using System.Collections;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 
 public class AppStartup : MonoBehaviour
 {
+#if UNITY_IOS && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern int _CameraPermissionStatus();
+
+    [DllImport("__Internal")]
+    private static extern void _RequestCameraPermission();
+#endif
+
     ARSession arSession;
     Text statusText;
 
@@ -20,19 +29,31 @@ public class AppStartup : MonoBehaviour
         statusText = FindStatusText();
         ShowStatus("Requesting camera access...");
 
-        if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
-            yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
+#if UNITY_IOS && !UNITY_EDITOR
+        int status = _CameraPermissionStatus();
 
-        if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+        if (status == 0)
+        {
+            _RequestCameraPermission();
+            // Poll until iOS responds
+            while (_CameraPermissionStatus() == 0)
+                yield return new WaitForSeconds(0.2f);
+            status = _CameraPermissionStatus();
+        }
+
+        if (status != 1)
         {
             Debug.LogError("[VRPiano] Camera permission denied");
             ShowStatus(
                 "Camera access is required.\n\n" +
-                "Please open Settings > Privacy & Security > Camera\n" +
+                "Go to Settings > Privacy & Security > Camera\n" +
                 "and enable access for this app,\n" +
                 "then relaunch.");
             yield break;
         }
+#else
+        yield return null;
+#endif
 
         Debug.Log("[VRPiano] Camera permission granted, starting AR session");
         ShowStatus("Starting AR...");
@@ -59,7 +80,7 @@ public class AppStartup : MonoBehaviour
             ShowStatus(
                 $"AR could not start.\nState: {ARSession.state}\n\n" +
                 "Ensure this device supports ARKit\n" +
-                "and the camera is not in use by another app.");
+                "and the camera is not in use.");
         }
     }
 
