@@ -2,6 +2,7 @@ using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 
 public static class SceneSetup
@@ -15,9 +16,10 @@ public static class SceneSetup
         foreach (var go in scene.GetRootGameObjects())
             Object.DestroyImmediate(go);
 
-        // AR Session
+        // AR Session (disabled — AppStartup enables it after camera permission)
         var sessionGo = new GameObject("AR Session");
-        sessionGo.AddComponent<ARSession>();
+        var arSession = sessionGo.AddComponent<ARSession>();
+        arSession.enabled = false;
         sessionGo.AddComponent<AppStartup>();
 
         // XR Origin
@@ -33,7 +35,7 @@ public static class SceneSetup
         cameraGo.transform.SetParent(offsetGo.transform, false);
         cameraGo.tag = "MainCamera";
         var cam = cameraGo.AddComponent<Camera>();
-        cam.clearFlags = CameraClearFlags.Color;
+        cam.clearFlags = CameraClearFlags.SolidColor;
         cam.backgroundColor = Color.black;
         cam.nearClipPlane = 0.01f;
         cameraGo.AddComponent<ARCameraManager>();
@@ -66,6 +68,42 @@ public static class SceneSetup
         var handGo = new GameObject("Hand Interaction");
         var hand = handGo.AddComponent<HandInteraction>();
         hand.pianoManager = manager;
+
+        // Status UI Canvas
+        var canvasGo = new GameObject("Status Canvas");
+        var canvas = canvasGo.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 100;
+        var scaler = canvasGo.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1080, 1920);
+        canvasGo.AddComponent<GraphicRaycaster>();
+
+        var panelGo = new GameObject("Background");
+        panelGo.transform.SetParent(canvasGo.transform, false);
+        var panelRect = panelGo.AddComponent<RectTransform>();
+        panelRect.anchorMin = Vector2.zero;
+        panelRect.anchorMax = Vector2.one;
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+        var panelImage = panelGo.AddComponent<Image>();
+        panelImage.color = new Color(0, 0, 0, 0.85f);
+
+        var textGo = new GameObject("StatusText");
+        textGo.transform.SetParent(panelGo.transform, false);
+        var textRect = textGo.AddComponent<RectTransform>();
+        textRect.anchorMin = new Vector2(0.1f, 0.3f);
+        textRect.anchorMax = new Vector2(0.9f, 0.7f);
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+        var text = textGo.AddComponent<Text>();
+        text.text = "Initializing...";
+        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.fontSize = 32;
+        text.color = Color.white;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.horizontalOverflow = HorizontalWrapMode.Wrap;
+        text.verticalOverflow = VerticalWrapMode.Truncate;
 
         // Save
         System.IO.Directory.CreateDirectory(Application.dataPath + "/Scenes");
