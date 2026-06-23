@@ -15,6 +15,14 @@ extern void ARPianoManager_GetWhiteKeys_m8E1EDBD7C15D987BD4655A8A1EA9741B5AD072F
 extern void ARPianoManager_GetAllKeys_m37361BBB0B3949F0567D82A85655A8F6DF7C60D9 (void);
 extern void ARPianoManager__ctor_m64810DF1F0B7BE991AAA694A6E3A600F982D0BFF (void);
 extern void ARPianoManager__cctor_m182526413F699040EA0B501E6B9A9360961655E7 (void);
+extern void AppStartup_Start_m18092CD2B34967E7A0F26CCCF27A99EA1EEF452C (void);
+extern void AppStartup__ctor_m5622997E1E505891FA8874074586136BD6CAE9E0 (void);
+extern void U3CStartU3Ed__0__ctor_mC02D87DFB424EC9F0AD2B2C751F379AFA4D96811 (void);
+extern void U3CStartU3Ed__0_System_IDisposable_Dispose_m3CDB32F52B4FDFF3DC0DF852555EB10CC2360681 (void);
+extern void U3CStartU3Ed__0_MoveNext_mC417F232DB1E771E48366009AC8B27FCCB93DFAA (void);
+extern void U3CStartU3Ed__0_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_mFA37DDCFB6D3A7CE3BED5A7FB24ACF21AA0146B6 (void);
+extern void U3CStartU3Ed__0_System_Collections_IEnumerator_Reset_m20BA6BC6C5AA5814F94839E11B5F17EB9417BBBB (void);
+extern void U3CStartU3Ed__0_System_Collections_IEnumerator_get_Current_mCC3428E65A000A759B1137A0D06BC0F3CD8FD322 (void);
 extern void HandInteraction_OnEnable_mAD5CD91F45589A2113F35A2B969FF6CA19FEFC83 (void);
 extern void HandInteraction_Update_m3B3AD0E62BCA0A7F33CC4C01EC11E9BBB8B784A2 (void);
 extern void HandInteraction_CheckHand_mB897B239896B71F2C75A8287DBB5BB8869B442D9 (void);
@@ -44,7 +52,7 @@ extern void PianoKey_Release_m3CB12D8B47CDE173B1105BE7C055FCF5C3E7F5DD (void);
 extern void PianoKey__ctor_m5521992DEC04BD5D09A157E16406AF17AC149F5C (void);
 extern void UnitySourceGeneratedAssemblyMonoScriptTypes_v1_Get_mBEB95BEB954BB63E9710BBC7AD5E78C4CB0A0033 (void);
 extern void UnitySourceGeneratedAssemblyMonoScriptTypes_v1__ctor_mE70FB23ACC1EA12ABC948AA22C2E78B2D0AA39B1 (void);
-static Il2CppMethodPointer s_methodPointers[37] = 
+static Il2CppMethodPointer s_methodPointers[45] = 
 {
 	ARPianoManager_Start_m1101093BFEA2A809420D5EBA1E425119B86BA0D4,
 	ARPianoManager_LateUpdate_m4E357CB939CD14BCDAE5F94527684307642CE464,
@@ -54,6 +62,14 @@ static Il2CppMethodPointer s_methodPointers[37] =
 	ARPianoManager_GetAllKeys_m37361BBB0B3949F0567D82A85655A8F6DF7C60D9,
 	ARPianoManager__ctor_m64810DF1F0B7BE991AAA694A6E3A600F982D0BFF,
 	ARPianoManager__cctor_m182526413F699040EA0B501E6B9A9360961655E7,
+	AppStartup_Start_m18092CD2B34967E7A0F26CCCF27A99EA1EEF452C,
+	AppStartup__ctor_m5622997E1E505891FA8874074586136BD6CAE9E0,
+	U3CStartU3Ed__0__ctor_mC02D87DFB424EC9F0AD2B2C751F379AFA4D96811,
+	U3CStartU3Ed__0_System_IDisposable_Dispose_m3CDB32F52B4FDFF3DC0DF852555EB10CC2360681,
+	U3CStartU3Ed__0_MoveNext_mC417F232DB1E771E48366009AC8B27FCCB93DFAA,
+	U3CStartU3Ed__0_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_mFA37DDCFB6D3A7CE3BED5A7FB24ACF21AA0146B6,
+	U3CStartU3Ed__0_System_Collections_IEnumerator_Reset_m20BA6BC6C5AA5814F94839E11B5F17EB9417BBBB,
+	U3CStartU3Ed__0_System_Collections_IEnumerator_get_Current_mCC3428E65A000A759B1137A0D06BC0F3CD8FD322,
 	HandInteraction_OnEnable_mAD5CD91F45589A2113F35A2B969FF6CA19FEFC83,
 	HandInteraction_Update_m3B3AD0E62BCA0A7F33CC4C01EC11E9BBB8B784A2,
 	HandInteraction_CheckHand_mB897B239896B71F2C75A8287DBB5BB8869B442D9,
@@ -84,7 +100,7 @@ static Il2CppMethodPointer s_methodPointers[37] =
 	UnitySourceGeneratedAssemblyMonoScriptTypes_v1_Get_mBEB95BEB954BB63E9710BBC7AD5E78C4CB0A0033,
 	UnitySourceGeneratedAssemblyMonoScriptTypes_v1__ctor_mE70FB23ACC1EA12ABC948AA22C2E78B2D0AA39B1,
 };
-static const int32_t s_InvokerIndices[37] = 
+static const int32_t s_InvokerIndices[45] = 
 {
 	7931,
 	7931,
@@ -94,6 +110,14 @@ static const int32_t s_InvokerIndices[37] =
 	7591,
 	7931,
 	11609,
+	7591,
+	7931,
+	6004,
+	7931,
+	7626,
+	7591,
+	7931,
+	7591,
 	7931,
 	7931,
 	6215,
@@ -128,7 +152,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule;
 const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule = 
 {
 	"Assembly-CSharp.dll",
-	37,
+	45,
 	s_methodPointers,
 	0,
 	NULL,

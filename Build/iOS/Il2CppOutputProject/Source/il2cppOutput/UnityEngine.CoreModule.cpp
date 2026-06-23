@@ -104,6 +104,7 @@ struct InterfaceFuncInvoker1
 	}
 };
 
+struct Action_1_tE8693FF0E67CDBA52BAFB211BFF1844D076ABAFB;
 struct Action_1_t10DCB0C07D0D3C565CEACADC80D1152B35A45F6C;
 struct Action_1_tDF52F11383ED01DB581C39D18E0D29B0956E7681;
 struct Action_1_t73DDB95B444644A3C36475D55244D23E26A68A71;
@@ -200,6 +201,7 @@ struct ArgumentException_tAD90411542A20A9C72D5CDA3A84181D8B947A263;
 struct ArgumentNullException_t327031E412FAB2351B0022DD5DAD47E67E597129;
 struct ArgumentOutOfRangeException_tEA2822DAF62B10EEED00E0E3A341D4BAF78CF85F;
 struct Assembly_t;
+struct AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C;
 struct Attribute_tFDA8EFEFB0711976D22474794576DAF28F7440AA;
 struct BatchRendererGroupRuntimeAnalytic_tB8D6242BBACB7D7F642815A840DD25D4B1591F6E;
 struct BeforeRenderOrderAttribute_tA8FE37086C591C22052237ABB6EE2B64C1429D8E;
@@ -1223,6 +1225,15 @@ struct ValueType_t6D9B272BD21782F0A9A14F2E41F85A50E97A986F_marshaled_pinvoke
 struct ValueType_t6D9B272BD21782F0A9A14F2E41F85A50E97A986F_marshaled_com
 {
 };
+struct YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D  : public RuntimeObject
+{
+};
+struct YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_pinvoke
+{
+};
+struct YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_com
+{
+};
 struct __UnityModuleInitialization_t3E7D890B7D530E3215B359E4CA7156D41A24EA33  : public RuntimeObject
 {
 };
@@ -1901,6 +1912,21 @@ struct AssetLoadingSubsystem_t16CE02097A0BE1FAB24960335EB524629CD31473
 {
 	int32_t ___value__;
 };
+struct AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C  : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D
+{
+	intptr_t ___m_Ptr;
+	Action_1_tE8693FF0E67CDBA52BAFB211BFF1844D076ABAFB* ___m_completeCallback;
+};
+struct AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C_marshaled_pinvoke : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_pinvoke
+{
+	intptr_t ___m_Ptr;
+	Il2CppMethodPointer ___m_completeCallback;
+};
+struct AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C_marshaled_com : public YieldInstruction_tFCE35FD0907950EFEE9BC2890AC664E41C53728D_marshaled_com
+{
+	intptr_t ___m_Ptr;
+	Il2CppMethodPointer ___m_completeCallback;
+};
 struct BindingFlags_t5DC2835E4AE9C1862B3AD172EF35B6A5F4F1812C 
 {
 	int32_t ___value__;
@@ -2452,6 +2478,10 @@ struct TextureWrapMode_tF9851343029052ED45668D1C99BAE09B2CCC13AD
 	int32_t ___value__;
 };
 struct TypeInferenceRules_tEFD8B0F1D39A1EA0A86C159333202C56FFD90B87 
+{
+	int32_t ___value__;
+};
+struct UserAuthorization_tD726D18E80FB80F5A0F64B477C260BC8495BC80F 
 {
 	int32_t ___value__;
 };
@@ -4718,6 +4748,8 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool AnimationCurve_Equals_mC44657401804A22DC
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool IntPtr_Equals_m0F39AB64A7BBD67190E745FF8334A5FC766CB26E (intptr_t* __this, RuntimeObject* ___0_obj, const RuntimeMethod* method) ;
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool AnimationCurve_Internal_Equals_mEBA61732FE57654C4E3AF5B317918D1641E36050 (AnimationCurve_tCBFFAAD05CEBB35EF8D8631BD99914BE1A6BB354* __this, intptr_t ___0_other, const RuntimeMethod* method) ;
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Application_OpenURL_Injected_mDC12FF341776EEE237A5F95BBEDC093FCE243B23 (ManagedSpanWrapper_tE7FC4BBB631B130757F8DEB15853D98FD3D5DC0E* ___0_url, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR intptr_t Application_RequestUserAuthorization_Injected_mC442C96BF772C26B87D8FCDE4DF800513D281FB3 (int32_t ___0_mode, const RuntimeMethod* method) ;
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C* BindingsMarshaller_ConvertToManaged_mE5E3823C9D0765295D0CDDB541B233178788FEF2 (intptr_t ___0_ptr, const RuntimeMethod* method) ;
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void ApplicationMemoryUsageChange__ctor_mD1B7299FCDDF14B479AF66AFDDFC2D710AC6A3C0 (ApplicationMemoryUsageChange_t6D0E5F815818103331E6C5B0D42E006408D4FFC1* __this, int32_t ___0_usage, const RuntimeMethod* method) ;
 IL2CPP_MANAGED_FORCE_INLINE IL2CPP_METHOD_ATTR void MemoryUsageChangedCallback_Invoke_m3C0E629B4D924D71D84DED6B9C78BD62263F9F1F_inline (MemoryUsageChangedCallback_t2C3B85C19E7620327958BA77A7B603C544AD1188* __this, ApplicationMemoryUsageChange_t6D0E5F815818103331E6C5B0D42E006408D4FFC1* ___0_usage, const RuntimeMethod* method) ;
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Exception__ctor_m9B2BD92CD68916245A75109105D9071C9D430E7F (Exception_t* __this, String_t* ___0_message, const RuntimeMethod* method) ;
@@ -12435,6 +12467,58 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Application_set_targetFrameRate_mB90EEA6
 	_il2cpp_icall_func = (Application_set_targetFrameRate_mB90EEA60DAE55CD71C38D4B7DFDBE2B34EA6B46F_ftn)il2cpp_codegen_resolve_icall ("UnityEngine.Application::set_targetFrameRate(System.Int32)");
 	_il2cpp_icall_func(___0_value);
 }
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C* Application_RequestUserAuthorization_mADBB6AC1C7EF417C7D11D2D8F1263985547F94AA (int32_t ___0_mode, const RuntimeMethod* method) 
+{
+	static bool s_Il2CppMethodInitialized;
+	if (!s_Il2CppMethodInitialized)
+	{
+		il2cpp_codegen_initialize_runtime_metadata((uintptr_t*)&Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21_il2cpp_TypeInfo_var);
+		s_Il2CppMethodInitialized = true;
+	}
+	intptr_t G_B2_0;
+	memset((&G_B2_0), 0, sizeof(G_B2_0));
+	intptr_t G_B1_0;
+	memset((&G_B1_0), 0, sizeof(G_B1_0));
+	AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C* G_B3_0 = NULL;
+	{
+		int32_t L_0 = ___0_mode;
+		il2cpp_codegen_runtime_class_init_inline(Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21_il2cpp_TypeInfo_var);
+		intptr_t L_1;
+		L_1 = Application_RequestUserAuthorization_Injected_mC442C96BF772C26B87D8FCDE4DF800513D281FB3(L_0, NULL);
+		intptr_t L_2 = L_1;
+		if (!L_2)
+		{
+			G_B2_0 = L_2;
+			goto IL_0010;
+		}
+		G_B1_0 = L_2;
+	}
+	{
+		AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C* L_3;
+		L_3 = BindingsMarshaller_ConvertToManaged_mE5E3823C9D0765295D0CDDB541B233178788FEF2(G_B1_0, NULL);
+		G_B3_0 = L_3;
+		goto IL_0013;
+	}
+
+IL_0010:
+	{
+		G_B3_0 = ((AsyncOperation_tD2789250E4B098DEDA92B366A577E500A92D2D3C*)(NULL));
+	}
+
+IL_0013:
+	{
+		return G_B3_0;
+	}
+}
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR bool Application_HasUserAuthorization_mB418451E98E7C23BA2A31DDF39BFB7253023B4F4 (int32_t ___0_mode, const RuntimeMethod* method) 
+{
+	typedef bool (*Application_HasUserAuthorization_mB418451E98E7C23BA2A31DDF39BFB7253023B4F4_ftn) (int32_t);
+	static Application_HasUserAuthorization_mB418451E98E7C23BA2A31DDF39BFB7253023B4F4_ftn _il2cpp_icall_func;
+	if (!_il2cpp_icall_func)
+	_il2cpp_icall_func = (Application_HasUserAuthorization_mB418451E98E7C23BA2A31DDF39BFB7253023B4F4_ftn)il2cpp_codegen_resolve_icall ("UnityEngine.Application::HasUserAuthorization(UnityEngine.UserAuthorization)");
+	bool icallRetVal = _il2cpp_icall_func(___0_mode);
+	return icallRetVal;
+}
 IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR int32_t Application_get_platform_m59EF7D6155D18891B24767F83F388160B1FF2138 (const RuntimeMethod* method) 
 {
 	typedef int32_t (*Application_get_platform_m59EF7D6155D18891B24767F83F388160B1FF2138_ftn) ();
@@ -13346,6 +13430,15 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Application_OpenURL_Injected_mDC12FF3417
 	_il2cpp_icall_func = (Application_OpenURL_Injected_mDC12FF341776EEE237A5F95BBEDC093FCE243B23_ftn)il2cpp_codegen_resolve_icall ("UnityEngine.Application::OpenURL_Injected(UnityEngine.Bindings.ManagedSpanWrapper&)");
 	_il2cpp_icall_func(___0_url);
 }
+IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR intptr_t Application_RequestUserAuthorization_Injected_mC442C96BF772C26B87D8FCDE4DF800513D281FB3 (int32_t ___0_mode, const RuntimeMethod* method) 
+{
+	typedef intptr_t (*Application_RequestUserAuthorization_Injected_mC442C96BF772C26B87D8FCDE4DF800513D281FB3_ftn) (int32_t);
+	static Application_RequestUserAuthorization_Injected_mC442C96BF772C26B87D8FCDE4DF800513D281FB3_ftn _il2cpp_icall_func;
+	if (!_il2cpp_icall_func)
+	_il2cpp_icall_func = (Application_RequestUserAuthorization_Injected_mC442C96BF772C26B87D8FCDE4DF800513D281FB3_ftn)il2cpp_codegen_resolve_icall ("UnityEngine.Application::RequestUserAuthorization_Injected(UnityEngine.UserAuthorization)");
+	intptr_t icallRetVal = _il2cpp_icall_func(___0_mode);
+	return icallRetVal;
+}
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
@@ -13635,6 +13728,14 @@ IL2CPP_EXTERN_C  void ApplicationMemoryUsageChange__ctor_mD1B7299FCDDF14B479AF66
 	_thisAdjusted = il2cpp_codegen_get_raw_data<ApplicationMemoryUsageChange_t6D0E5F815818103331E6C5B0D42E006408D4FFC1>(__this);
 	ApplicationMemoryUsageChange__ctor_mD1B7299FCDDF14B479AF66AFDDFC2D710AC6A3C0(_thisAdjusted, ___0_usage, method);
 }
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif

@@ -18,6 +18,7 @@ public static class SceneSetup
         // AR Session
         var sessionGo = new GameObject("AR Session");
         sessionGo.AddComponent<ARSession>();
+        sessionGo.AddComponent<AppStartup>();
 
         // XR Origin
         var originGo = new GameObject("XR Origin");

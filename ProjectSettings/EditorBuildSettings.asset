@@ -7,3 +7,4 @@ EditorBuildSettings:
   m_Scenes: []
   m_configObjects:
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 1a91009a1b51cfc479092fd00923bff5, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 945439c160aa0cd48b886bcbac969935, type: 2}
