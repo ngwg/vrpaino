@@ -38,13 +38,16 @@ jobs:
           cd Build/iOS
           APP=$(find DerivedData -type d -name "*.app" -not -path "*.dSYM/*" | head -1)
           echo "Found app: $APP"
+          ls -la "$APP/"
 
-          mkdir -p Payload
-          cp -r "$APP" Payload/
-          cd Payload
-          zip -r ../vrpaino.ipa .
+          rm -rf _ipa_root
+          mkdir -p _ipa_root/Payload
+          cp -r "$APP" _ipa_root/Payload/
+          cd _ipa_root
+          zip -r ../vrpaino.ipa Payload/
           cd ..
           echo "IPA size: $(du -h vrpaino.ipa | cut -f1)"
+          unzip -l vrpaino.ipa | head -20
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
