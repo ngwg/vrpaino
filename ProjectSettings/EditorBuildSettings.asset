@@ -4,6 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/ARPiano.unity
+    guid: 75c213a14dae310419883fc2d2f813e8
   m_configObjects:
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 1a91009a1b51cfc479092fd00923bff5, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 56d525f15016e914fbf18391ba3fa756, type: 2}
