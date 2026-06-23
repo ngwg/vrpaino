@@ -61,6 +61,7 @@
     <array>
       <string>arm64</string>
       <string>metal</string>
+      <string>arkit</string>
     </array>
     <key>UIRequiresFullScreen</key>
     <true />
