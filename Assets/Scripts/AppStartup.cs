@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.Management;
 
 public class AppStartup : MonoBehaviour
 {
@@ -35,7 +36,6 @@ public class AppStartup : MonoBehaviour
         if (status == 0)
         {
             _RequestCameraPermission();
-            // Poll until iOS responds
             while (_CameraPermissionStatus() == 0)
                 yield return new WaitForSeconds(0.2f);
             status = _CameraPermissionStatus();
@@ -55,9 +55,43 @@ public class AppStartup : MonoBehaviour
         yield return null;
 #endif
 
-        Debug.Log("[VRPiano] Camera permission granted, starting AR session");
+        Debug.Log("[VRPiano] Camera permission granted");
         ShowStatus("Starting AR...");
 
+        // Ensure XR is initialized
+        var xrSettings = XRGeneralSettings.Instance;
+        if (xrSettings == null)
+        {
+            Debug.LogError("[VRPiano] XRGeneralSettings.Instance is null");
+            ShowStatus("XR settings not found.\nThe build may be misconfigured.");
+            yield break;
+        }
+
+        var xrManager = xrSettings.Manager;
+        if (xrManager == null)
+        {
+            Debug.LogError("[VRPiano] XRManagerSettings is null");
+            ShowStatus("XR manager not found.\nThe build may be misconfigured.");
+            yield break;
+        }
+
+        if (xrManager.activeLoader == null)
+        {
+            Debug.Log("[VRPiano] No active XR loader, initializing manually...");
+            yield return xrManager.InitializeLoader();
+        }
+
+        if (xrManager.activeLoader == null)
+        {
+            Debug.LogError("[VRPiano] XR loader failed to initialize");
+            ShowStatus("ARKit failed to load.\nCheck device compatibility.");
+            yield break;
+        }
+
+        Debug.Log($"[VRPiano] XR loader active: {xrManager.activeLoader.name}");
+        xrManager.StartSubsystems();
+
+        // Now enable ARSession
         if (arSession != null)
             arSession.enabled = true;
 
@@ -76,11 +110,12 @@ public class AppStartup : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[VRPiano] AR not ready after {timeout}s, state: {ARSession.state}");
+            Debug.LogWarning($"[VRPiano] AR state after {timeout}s: {ARSession.state}");
             ShowStatus(
-                $"AR could not start.\nState: {ARSession.state}\n\n" +
-                "Ensure this device supports ARKit\n" +
-                "and the camera is not in use.");
+                $"AR state: {ARSession.state}\n\n" +
+                "Trying to continue anyway...");
+            yield return new WaitForSeconds(2f);
+            HideStatus();
         }
     }
 
