@@ -71,11 +71,16 @@ public class AppStartup : MonoBehaviour
             yield break;
         }
 
-        // Deinitialize first in case auto-init tried and failed
+        // Clean up any previous session (fixes second-launch issues)
+        if (arSession != null)
+            ARSession.Reset();
+
         if (xrManager.isInitializationComplete)
         {
             Debug.Log("[VRPiano] Deinitializing previous XR attempt...");
+            xrManager.StopSubsystems();
             xrManager.DeinitializeLoader();
+            yield return null;
         }
 
         Debug.Log($"[VRPiano] Initializing XR loader (loaders: {xrManager.activeLoaders.Count})...");
@@ -107,6 +112,29 @@ public class AppStartup : MonoBehaviour
         }
 
         Debug.Log($"[VRPiano] AR state: {ARSession.state}");
+
+        // Now enable AR managers that need subsystems to be running
+        var planeManager = FindAnyObjectByType<ARPlaneManager>(FindObjectsInactive.Include);
+        if (planeManager != null)
+        {
+            planeManager.enabled = true;
+            Debug.Log($"[VRPiano] ARPlaneManager enabled, subsystem: {planeManager.subsystem != null}");
+        }
+
+        var raycastMgr = FindAnyObjectByType<ARRaycastManager>(FindObjectsInactive.Include);
+        if (raycastMgr != null)
+        {
+            raycastMgr.enabled = true;
+            Debug.Log("[VRPiano] ARRaycastManager enabled");
+        }
+
+        var anchorMgr = FindAnyObjectByType<ARAnchorManager>(FindObjectsInactive.Include);
+        if (anchorMgr != null)
+        {
+            anchorMgr.enabled = true;
+            Debug.Log("[VRPiano] ARAnchorManager enabled");
+        }
+
         ShowStatus("Look at a flat surface\nto place the piano");
 
         // Wait until piano is placed, then hide

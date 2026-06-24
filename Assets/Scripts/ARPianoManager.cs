@@ -10,12 +10,13 @@ public class ARPianoManager : MonoBehaviour
 
     ARRaycastManager raycastManager;
     ARPlaneManager planeManager;
-    ARAnchorManager anchorManager;
     GameObject placementIndicator;
     float stableTimer;
+    float totalScanTime;
     Vector3 lastHitPosition;
     const float StableThreshold = 0.05f;
     const float StableTimeRequired = 2f;
+    const float FallbackTimeout = 15f;
 
     readonly List<PianoKey> whiteKeys = new();
     readonly List<PianoKey> allKeys = new();
@@ -36,10 +37,6 @@ public class ARPianoManager : MonoBehaviour
         if (cameraTransform == null)
             cameraTransform = Camera.main.transform;
 
-        raycastManager = FindAnyObjectByType<ARRaycastManager>();
-        planeManager = FindAnyObjectByType<ARPlaneManager>();
-        anchorManager = FindAnyObjectByType<ARAnchorManager>();
-
         BuildPiano();
         SetPianoVisible(false);
         CreatePlacementIndicator();
@@ -49,9 +46,27 @@ public class ARPianoManager : MonoBehaviour
     {
         if (placed) return;
 
+        // Lazy-find managers (they start disabled, enabled by AppStartup after XR is ready)
+        if (raycastManager == null)
+            raycastManager = FindAnyObjectByType<ARRaycastManager>();
+        if (planeManager == null)
+            planeManager = FindAnyObjectByType<ARPlaneManager>();
+
+        totalScanTime += Time.deltaTime;
+
+        // Fallback: if no planes detected after timeout, place in front of camera
+        if (totalScanTime >= FallbackTimeout)
+        {
+            Debug.Log("[VRPiano] Plane detection timed out, using fallback placement");
+            FallbackPlace();
+            return;
+        }
+
+        if (raycastManager == null || !raycastManager.enabled) return;
+
         var screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
 
-        if (raycastManager != null && raycastManager.Raycast(screenCenter, raycastHits, TrackableType.PlaneWithinPolygon))
+        if (raycastManager.Raycast(screenCenter, raycastHits, TrackableType.PlaneWithinPolygon))
         {
             var hit = raycastHits[0];
             var hitPos = hit.pose.position;
@@ -68,7 +83,7 @@ public class ARPianoManager : MonoBehaviour
                 stableTimer += Time.deltaTime;
                 if (stableTimer >= StableTimeRequired)
                 {
-                    PlacePianoAt(hitPos, hitRot);
+                    PlacePianoAt(hitPos);
                     return;
                 }
             }
@@ -80,7 +95,7 @@ public class ARPianoManager : MonoBehaviour
         }
         else
         {
-            if (placementIndicator.activeSelf)
+            if (placementIndicator != null && placementIndicator.activeSelf)
                 placementIndicator.SetActive(false);
             stableTimer = 0f;
         }
@@ -88,17 +103,17 @@ public class ARPianoManager : MonoBehaviour
         // Tap to place as backup
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
-            if (raycastManager != null && raycastManager.Raycast(Input.GetTouch(0).position, raycastHits, TrackableType.PlaneWithinPolygon))
+            if (raycastManager.Raycast(Input.GetTouch(0).position, raycastHits, TrackableType.PlaneWithinPolygon))
             {
-                var hit = raycastHits[0];
-                PlacePianoAt(hit.pose.position, hit.pose.rotation);
+                PlacePianoAt(raycastHits[0].pose.position);
             }
         }
     }
 
-    void PlacePianoAt(Vector3 position, Quaternion rotation)
+    void PlacePianoAt(Vector3 position)
     {
-        Destroy(placementIndicator);
+        if (placementIndicator != null)
+            Destroy(placementIndicator);
 
         float yawToCamera = Quaternion.LookRotation(
             Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up)).eulerAngles.y;
@@ -106,14 +121,12 @@ public class ARPianoManager : MonoBehaviour
         transform.position = position + Vector3.up * (WhiteKeyHeight / 2f);
         transform.rotation = Quaternion.Euler(0, yawToCamera, 0);
 
-        // Anchor to keep piano locked to this physical spot
         if (gameObject.GetComponent<ARAnchor>() == null)
             gameObject.AddComponent<ARAnchor>();
 
         SetPianoVisible(true);
         placed = true;
 
-        // Disable plane detection to save performance
         if (planeManager != null)
         {
             planeManager.requestedDetectionMode = PlaneDetectionMode.None;
@@ -122,6 +135,27 @@ public class ARPianoManager : MonoBehaviour
         }
 
         Debug.Log($"[VRPiano] Piano placed at {position}");
+    }
+
+    void FallbackPlace()
+    {
+        if (placementIndicator != null)
+            Destroy(placementIndicator);
+
+        Vector3 pos = cameraTransform.position
+            + cameraTransform.forward * 0.5f
+            + Vector3.up * -0.3f;
+
+        float yaw = Quaternion.LookRotation(
+            Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up)).eulerAngles.y;
+
+        transform.position = pos;
+        transform.rotation = Quaternion.Euler(0, yaw, 0);
+
+        SetPianoVisible(true);
+        placed = true;
+
+        Debug.Log($"[VRPiano] Piano fallback-placed at {pos}");
     }
 
     void SetPianoVisible(bool visible)
@@ -143,7 +177,7 @@ public class ARPianoManager : MonoBehaviour
         var rend = placementIndicator.GetComponent<Renderer>();
         var shader = Shader.Find("Unlit/Color") ?? Shader.Find("Universal Render Pipeline/Unlit") ?? rend.material.shader;
         rend.material = new Material(shader);
-        rend.material.color = new Color(0.2f, 1f, 0.4f, 0.7f);
+        rend.material.color = new Color(0.2f, 1f, 0.4f, 1f);
 
         placementIndicator.SetActive(false);
     }

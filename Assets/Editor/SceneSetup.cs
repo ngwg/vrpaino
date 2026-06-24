@@ -2,6 +2,7 @@ using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -39,15 +40,20 @@ public static class SceneSetup
         cam.clearFlags = CameraClearFlags.SolidColor;
         cam.backgroundColor = Color.black;
         cam.nearClipPlane = 0.01f;
+        cameraGo.AddComponent<TrackedPoseDriver>();
         cameraGo.AddComponent<ARCameraManager>();
         cameraGo.AddComponent<ARCameraBackground>();
+        xrOrigin.CameraFloorOffsetObject = offsetGo;
         xrOrigin.Camera = cam;
 
-        // AR Plane Detection (for surface placement)
+        // AR Plane Detection (disabled until XR subsystems are ready)
         var planeManager = originGo.AddComponent<ARPlaneManager>();
         planeManager.requestedDetectionMode = PlaneDetectionMode.Horizontal;
-        originGo.AddComponent<ARRaycastManager>();
-        originGo.AddComponent<ARAnchorManager>();
+        planeManager.enabled = false;
+        var raycastMgr = originGo.AddComponent<ARRaycastManager>();
+        raycastMgr.enabled = false;
+        var anchorMgr = originGo.AddComponent<ARAnchorManager>();
+        anchorMgr.enabled = false;
 
         // Directional Light
         var lightGo = new GameObject("Directional Light");
