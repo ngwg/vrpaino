@@ -1,49 +1,75 @@
 import UIKit
-import ARKit
-import RealityKit
+import AVFoundation
 
 class ViewController: UIViewController {
 
-    private var arView: ARView!
+    private var previewLayer: AVCaptureVideoPreviewLayer?
     private var label: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Bright background so we instantly see if UIKit even rendered
         view.backgroundColor = .systemBlue
 
         label = UILabel()
-        label.text = "1. App launched"
+        label.text = "Boot…"
         label.textColor = .white
         label.backgroundColor = .black
-        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.frame = CGRect(x: 10, y: 60, width: view.bounds.width - 20, height: 80)
+        label.frame = CGRect(x: 10, y: 60, width: view.bounds.width - 20, height: 120)
         label.autoresizingMask = [.flexibleWidth]
         view.addSubview(label)
+
+        let rawStatus = AVCaptureDevice.authorizationStatus(for: .video).rawValue
+        setLabel("App launched.\nCamera status raw = \(rawStatus)\n0=notDetermined 1=restricted 2=denied 3=authorized")
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        label.text = "2. viewDidAppear"
+        AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+            DispatchQueue.main.async {
+                if granted {
+                    self?.setLabel("✓ Camera GRANTED — starting preview…")
+                    self?.startPreview()
+                } else {
+                    self?.setLabel("✗ Camera DENIED.\nIf no dialog ever appeared, the Info.plist is broken.\nElse: Settings › Privacy › Camera › enable for this app.")
+                }
+            }
+        }
+    }
 
-        guard ARWorldTrackingConfiguration.isSupported else {
-            label.text = "ARKit NOT supported"
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer?.frame = view.bounds
+    }
+
+    private func setLabel(_ s: String) {
+        label.text = "  \(s)  "
+    }
+
+    private func startPreview() {
+        let session = AVCaptureSession()
+        session.sessionPreset = .high
+
+        guard
+            let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+            let input  = try? AVCaptureDeviceInput(device: device),
+            session.canAddInput(input)
+        else {
+            setLabel("Cannot open camera device.")
             return
         }
+        session.addInput(input)
 
-        label.text = "3. Creating ARView…"
-        arView = ARView(frame: view.bounds)
-        arView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.insertSubview(arView, belowSubview: label)
+        let layer = AVCaptureVideoPreviewLayer(session: session)
+        layer.videoGravity = .resizeAspectFill
+        layer.frame = view.bounds
+        view.layer.insertSublayer(layer, at: 0)
+        previewLayer = layer
 
-        label.text = "4. Running AR session…"
-        let config = ARWorldTrackingConfiguration()
-        arView.session.run(config)
-
-        label.text = "5. AR running — camera should show"
+        DispatchQueue.global(qos: .userInitiated).async { session.startRunning() }
+        setLabel("Camera running.\nIf you see this label over a live camera feed, the Info.plist is good and we can re-enable ARKit.")
     }
 }

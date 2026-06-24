@@ -17,8 +17,6 @@ targets:
       properties:
         NSCameraUsageDescription: "Camera is required to overlay the piano in augmented reality."
         UILaunchScreen: {}
-        UIRequiredDeviceCapabilities:
-          - arkit
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UIStatusBarHidden: true
