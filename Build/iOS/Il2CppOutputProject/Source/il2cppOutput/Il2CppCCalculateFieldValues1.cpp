@@ -1188,9 +1188,6 @@ struct AnimationTriggers_tA0DC06F89C5280C6DD972F6F4C8A56D7F4F79074  : public Run
 	String_t* ___m_SelectedTrigger;
 	String_t* ___m_DisabledTrigger;
 };
-struct Api_t470F25B777C6B022CAC62831CEEF793CBB27591C  : public RuntimeObject
-{
-};
 struct Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21  : public RuntimeObject
 {
 };
@@ -2093,28 +2090,7 @@ struct U3CFadeToastDialogU3Ed__155_t99A40EFAB9ECCB25A8519EC38037A9A3C35CFA90  : 
 struct U3CU3Ec_t88DFD6A2F405BF4238F08C557085F9B55BED6F90  : public RuntimeObject
 {
 };
-struct NativeApi_t2D9D2B3E6A711977F3C23A10973FE15644BC03A0  : public RuntimeObject
-{
-};
-struct NativeApi_t5D19B31937F8C54440B231339FD88D1D0B4E96F3  : public RuntimeObject
-{
-};
-struct NativeApi_tA075534F0DAA97BB7F9C800259061921B375CCCD  : public RuntimeObject
-{
-};
 struct U3CU3Ec_tADD55225C6EBA015B2413867A377663E2F97DC67  : public RuntimeObject
-{
-};
-struct NativeApi_tCE86CA95FB3DAE7DDA331A1CE168AF433237AE72  : public RuntimeObject
-{
-};
-struct NativeApi_t548E3D9F9A7833CF1E3F1B070CE79721F61C293E  : public RuntimeObject
-{
-};
-struct NativeApi_t7353853701D4F1DBB2C647EE3A69C5DA3FE5802B  : public RuntimeObject
-{
-};
-struct NativeApi_t0F540686783A93DF3B9EAC18376DA4265C35303E  : public RuntimeObject
 {
 };
 struct U3CU3Ec_t8D6AB7B3A962109762DC26A9916086617EBA63CB  : public RuntimeObject
@@ -3086,22 +3062,13 @@ struct SubsystemProvider_1_t22A73CFC0FBED238F54239530C581C40C8C1E4AB  : public S
 struct SubsystemProvider_1_tFF1B90B39743451ED6BD37EDC363EA88F1D43680  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
 {
 };
-struct SubsystemProvider_1_t20B2C596C10D7ADE57EDDAD1DCD344582E78931C  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
-{
-};
 struct SubsystemProvider_1_t96CFB39FD0C0E7ABD02483062352B397EEF99673  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
-{
-};
-struct SubsystemProvider_1_tF65012CDD63D35632BE6EFD25A6887B51FB0DAC6  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
 {
 };
 struct SubsystemProvider_1_tD8BB23AD9B7D75B68DE81297C83ADF1DA9FC07BE  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
 {
 };
 struct SubsystemProvider_1_t74E36C5AB7E76B50B6EC8425F4339F7CA3695E41  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
-{
-};
-struct SubsystemProvider_1_t5703A860CAB763123BF965525C303C56739A12D3  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
 {
 };
 struct SubsystemProvider_1_tBF3C4994CBAACCFBF7C5B74C847151ED05D7D9C7  : public SubsystemProvider_tE1865B8FE698C81A59AED35E0E536BD53F402455
@@ -12261,9 +12228,6 @@ struct Transformation_t26ED8CF20E035506740A8504E00ECD67AF5FD137
 {
 	int32_t ___value__;
 };
-struct Provider_t8E42BA5D4C855D0517150DFD548306DAB26001F5  : public SubsystemProvider_1_t20B2C596C10D7ADE57EDDAD1DCD344582E78931C
-{
-};
 struct Capabilities_tDED38A2044C59940AE367615D51F86F66BA1630D 
 {
 	int32_t ___value__;
@@ -12313,9 +12277,6 @@ struct MeshTransformList_t761D725D4B30CFD7DDF57B3725004994FB3B561F
 {
 	intptr_t ___m_Self;
 };
-struct Provider_t61633418FFAF45215D3806DAC7FA2291A72D1EF4  : public SubsystemProvider_1_tF65012CDD63D35632BE6EFD25A6887B51FB0DAC6
-{
-};
 struct Provider_t1FE750F4D0AEC4E33028FD9207A4A42F7443899B  : public SubsystemProvider_1_tD8BB23AD9B7D75B68DE81297C83ADF1DA9FC07BE
 {
 };
@@ -12329,9 +12290,6 @@ struct Provider_t54FE59FC4E2842CD25758167AA09BDEB0B204B27  : public SubsystemPro
 struct Capabilities_t16224D444BD53BAC28DD84D646993F7396AB6E02 
 {
 	int32_t ___value__;
-};
-struct Provider_t0FBAE5B0900B592979458B36CFCE0D3865EB158F  : public SubsystemProvider_1_t5703A860CAB763123BF965525C303C56739A12D3
-{
 };
 struct Capabilities_t9F639E60191CA5F365D4C8EEDE67454785AC0695 
 {
@@ -17325,9 +17283,6 @@ struct U3CTryAddAnchorAsyncU3Ed__12_tDD176E755BE41E01DD756D493711630FA53F26D9
 	Awaiter_tEDB6B9C57878F5FD37F6595B96149FDD69514D48 ___U3CU3Eu__1;
 	Awaiter_tD9E3F8A3169CDA7846C6548DA29E5144210DB95B ___U3CU3Eu__2;
 };
-struct ARKitProvider_t7E704468F3BE07E36888E342A795C19771426936  : public Provider_tC23348CAA1FF3A0CAF374E321AECCAD47945849C
-{
-};
 struct ARKitProvider_t3A14AA721F2360A9E87E0B62CB975ED789EE40AB  : public Provider_tC76B85B1D0C70B70C5FC6B9E92C0C2C5EF31A26C
 {
 	Material_t18053F08F347D0DCA5E1140EC7EC4533DD8A14E3* ___m_BeforeOpaqueCameraMaterial;
@@ -17345,9 +17300,6 @@ struct AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498
 	int32_t ___format;
 	ManagedReferenceImage_t0A3DD612124CB7A073A99C12E370F58A25D93337 ___managedReferenceImage;
 };
-struct ARKitProvider_tEE77A667B07997CF09149CDF4043DF20B8DD05A6  : public Provider_t61633418FFAF45215D3806DAC7FA2291A72D1EF4
-{
-};
 struct ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564  : public Provider_t1FE750F4D0AEC4E33028FD9207A4A42F7443899B
 {
 	int32_t ___m_OcclusionPreferenceMode;
@@ -17355,9 +17307,6 @@ struct ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564  : public Provide
 struct ARKitProvider_t2E6AFD9F1D6AE3B364DC6FA31DDC6DCD2E018FA5  : public Provider_t54FE59FC4E2842CD25758167AA09BDEB0B204B27
 {
 	intptr_t ___m_Ptr;
-};
-struct ARKitProvider_t76CF670AAB55DD67940CC59F356CAFE8D61E357B  : public Provider_t0FBAE5B0900B592979458B36CFCE0D3865EB158F
-{
 };
 struct ARKitProvider_tFEE275823742D2C0A5ED38904C6635EE4F1927CF  : public Provider_tC72F146E1619DDA4C636684BE11D9D8A445EFE46
 {
@@ -17367,15 +17316,6 @@ struct ARKitProvider_t28EEF677D43FA8A97859002F4F32B27FE28AAB1F  : public Provide
 {
 	intptr_t ___m_Self;
 	GCHandle_tC44F6F72EE68BD4CFABA24309DA7A179D41127DC ___m_SubsystemHandle;
-};
-struct ARKitProvider_t0241E3BE4F5FAC1A5082B930D77BC477C521E4AF  : public Provider_t8E42BA5D4C855D0517150DFD548306DAB26001F5
-{
-};
-struct ARKitProvider_t950991619EE098CC2E46187486BBA730C3A23E33  : public Provider_t61633418FFAF45215D3806DAC7FA2291A72D1EF4
-{
-};
-struct ARKitProvider_tBB59BBA46E3F493799654E097A3261975722A639  : public Provider_t0FBAE5B0900B592979458B36CFCE0D3865EB158F
-{
 };
 struct NullablePose_t6767623335FDA76357807C49D4EFC36066C83D02 
 {
@@ -18280,9 +18220,6 @@ struct ARCameraFrameEventArgs_t4060608C37C2B7248AFC908876309CC36D53E0EC_marshale
 	Texture_t791CBB51219779964E0E8A2ED7C1AA5F92A4A700* ___U3CcameraGrainTextureU3Ek__BackingField;
 	float ___U3CnoiseIntensityU3Ek__BackingField;
 	XRCameraFrameExifData_tCECD90020A07DE4EC65B94AEF60F0E1C5EC0E31E ___U3CexifDataU3Ek__BackingField;
-};
-struct ARKitImageTrackingSubsystem_tAA877D185F10F54FB10813E0B87B031B5DD424D4  : public XRImageTrackingSubsystem_t5EEEA714F4273F686F836517EE4957AEDFFD7BEB
-{
 };
 struct ARRaycastHit_tB32B5606815B8A7DF479C00187A852F8D20E3B70 
 {
@@ -23649,10 +23586,6 @@ struct ARRenderingUtils_tE75CD53EBD430ECC53EE60CA5C29D7E8F049A37F_StaticFields
 {
 	Nullable_1_t78F453FADB4A9F50F267A4E349019C34410D1A01 ___s_UseLegacyRenderPipeline;
 };
-struct Api_t470F25B777C6B022CAC62831CEEF793CBB27591C_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
 struct Application_tDB03BE91CDF0ACA614A5E0B67CFB77C44EB19B21_StaticFields
 {
 	LowMemoryCallback_tF685A8AA4A24BB7603D190EB750E61C3F963026F* ___lowMemory;
@@ -24417,39 +24350,11 @@ struct U3CU3Ec_t88DFD6A2F405BF4238F08C557085F9B55BED6F90_StaticFields
 	Func_1_t2BE7F58348C9CC544A8973B3A9E55541DE43C457* ___U3CU3E9__1_2;
 	Func_1_t2BE7F58348C9CC544A8973B3A9E55541DE43C457* ___U3CU3E9__1_3;
 };
-struct NativeApi_t2D9D2B3E6A711977F3C23A10973FE15644BC03A0_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct NativeApi_t5D19B31937F8C54440B231339FD88D1D0B4E96F3_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct NativeApi_tA075534F0DAA97BB7F9C800259061921B375CCCD_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
 struct U3CU3Ec_tADD55225C6EBA015B2413867A377663E2F97DC67_StaticFields
 {
 	U3CU3Ec_tADD55225C6EBA015B2413867A377663E2F97DC67* ___U3CU3E9;
 	Func_1_t2BE7F58348C9CC544A8973B3A9E55541DE43C457* ___U3CU3E9__2_0;
 	Func_1_t2BE7F58348C9CC544A8973B3A9E55541DE43C457* ___U3CU3E9__2_1;
-};
-struct NativeApi_tCE86CA95FB3DAE7DDA331A1CE168AF433237AE72_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct NativeApi_t548E3D9F9A7833CF1E3F1B070CE79721F61C293E_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct NativeApi_t7353853701D4F1DBB2C647EE3A69C5DA3FE5802B_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct NativeApi_t0F540686783A93DF3B9EAC18376DA4265C35303E_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
 };
 struct U3CU3Ec_t8D6AB7B3A962109762DC26A9916086617EBA63CB_StaticFields
 {
@@ -24951,10 +24856,6 @@ struct TicksPerSecond_t8EB7513122EF9DDB6EA2F960C53F4FD196D53BEF_StaticFields
 	TicksPerSecond_t8EB7513122EF9DDB6EA2F960C53F4FD196D53BEF ___TicksPerSecond11988;
 	TicksPerSecond_t8EB7513122EF9DDB6EA2F960C53F4FD196D53BEF ___DiscreteTimeRate;
 };
-struct ARCollaborationData_tD6250A7140E37CAAE7166DCCBAD8028C96D40C2F_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
 struct ARKitImageDatabase_tDC12F69141C54AB9E3E630968DB44FC565EE1367_StaticFields
 {
 	TextureFormatU5BU5D_t57C94D6A95145D00C2952E20E5E1E531EB1364C9* ___k_SupportedFormats;
@@ -25035,17 +24936,9 @@ struct Match_tFBEBCF225BD8EA17BCE6CE3FE5C1BD8E3074105F_StaticFields
 {
 	Match_tFBEBCF225BD8EA17BCE6CE3FE5C1BD8E3074105F* ___U3CEmptyU3Ek__BackingField;
 };
-struct NSMutableData_tD8A9B0E8B362DFF9E6ADF4C4E5F7C3101EA99BBD_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
 struct NSString_t0191BA1064CD5FA606A88A32045C88E6C52623B3_StaticFields
 {
 	NSString_t0191BA1064CD5FA606A88A32045C88E6C52623B3 ___underscore;
-};
-struct NativeChanges_t4525FB4889FDF4771EA635BD2946336D911F8E09_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
 };
 struct Object_tC12DECB6760A7F2CBF65D9DCF18D044C2D97152C_StaticFields
 {
@@ -25327,10 +25220,6 @@ struct XRTrackedObject_t56B5A101A8698B5C95F2CBE93FCF0F8911B67E75_StaticFields
 {
 	XRTrackedObject_t56B5A101A8698B5C95F2CBE93FCF0F8911B67E75 ___s_Default;
 };
-struct ARKitProvider_t7E704468F3BE07E36888E342A795C19771426936_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
 struct ARKitProvider_t3A14AA721F2360A9E87E0B62CB975ED789EE40AB_StaticFields
 {
 	int32_t ___k_TextureYPropertyNameId;
@@ -25340,10 +25229,6 @@ struct ARKitProvider_t3A14AA721F2360A9E87E0B62CB975ED789EE40AB_StaticFields
 	XRShaderKeywords_t9EC373FCDC7368C94E34C23A6C318983E277D9FE ___k_BuiltInRPShaderKeywords;
 	int32_t ___k_RenderingThreadingMode;
 	bool ___k_MultithreadedRenderingEnabled;
-};
-struct ARKitProvider_tEE77A667B07997CF09149CDF4043DF20B8DD05A6_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
 };
 struct ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields
 {
@@ -25360,26 +25245,6 @@ struct ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields
 	XRShaderKeywords_t9EC373FCDC7368C94E34C23A6C318983E277D9FE ___k_DepthDisabledShaderKeywords;
 	XRShaderKeywords_t9EC373FCDC7368C94E34C23A6C318983E277D9FE ___k_EnvironmentDepthKeywords;
 	XRShaderKeywords_t9EC373FCDC7368C94E34C23A6C318983E277D9FE ___k_HumanSegmentationKeywords;
-};
-struct ARKitProvider_t76CF670AAB55DD67940CC59F356CAFE8D61E357B_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct ARKitProvider_t0241E3BE4F5FAC1A5082B930D77BC477C521E4AF_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct ARKitProvider_t950991619EE098CC2E46187486BBA730C3A23E33_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct ARKitProvider_tBB59BBA46E3F493799654E097A3261975722A639_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
-};
-struct ARKitImageTrackingSubsystem_tAA877D185F10F54FB10813E0B87B031B5DD424D4_StaticFields
-{
-	String_t* ___k_ExceptionMsg;
 };
 struct Awaitable_t690337FEC1C411606E233EA36A41337B931C23CB_StaticFields
 {
@@ -29912,15 +29777,9 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5087[5] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5089[1] = 
 {
 	static_cast<int32_t>(offsetof(ARCollaborationDataBuilder_t7B6F244774C4416EACEEAE2DB76D93FF548B7464, ___m_NSMutableData)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5090[1] = 
-{
-	static_cast<int32_t>(offsetof(ARKitProvider_t7E704468F3BE07E36888E342A795C19771426936_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5091[5] = 
 {
 	static_cast<int32_t>(offsetof(U3CU3Ec_t88DFD6A2F405BF4238F08C557085F9B55BED6F90_StaticFields, ___U3CU3E9)),static_cast<int32_t>(offsetof(U3CU3Ec_t88DFD6A2F405BF4238F08C557085F9B55BED6F90_StaticFields, ___U3CU3E9__1_0)),static_cast<int32_t>(offsetof(U3CU3Ec_t88DFD6A2F405BF4238F08C557085F9B55BED6F90_StaticFields, ___U3CU3E9__1_1)),static_cast<int32_t>(offsetof(U3CU3Ec_t88DFD6A2F405BF4238F08C557085F9B55BED6F90_StaticFields, ___U3CU3E9__1_2)),static_cast<int32_t>(offsetof(U3CU3Ec_t88DFD6A2F405BF4238F08C557085F9B55BED6F90_StaticFields, ___U3CU3E9__1_3)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5093[1] = 
-{
-	static_cast<int32_t>(offsetof(Api_t470F25B777C6B022CAC62831CEEF793CBB27591C_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5096[19] = 
 {
 	static_cast<int32_t>(sizeof(RuntimeObject)),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
@@ -29930,15 +29789,9 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5098[16] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5099[1] = 
 {
 	0,};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5101[1] = 
-{
-	static_cast<int32_t>(offsetof(NativeApi_t5D19B31937F8C54440B231339FD88D1D0B4E96F3_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5103[1] = 
 {
 	static_cast<int32_t>(offsetof(ARKitProvider_tFEE275823742D2C0A5ED38904C6635EE4F1927CF, ___m_Self)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5104[1] = 
-{
-	static_cast<int32_t>(offsetof(NativeApi_t548E3D9F9A7833CF1E3F1B070CE79721F61C293E_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5106[4] = 
 {
 	static_cast<int32_t>(offsetof(ARKitSessionDelegate_tDCFB0E756EB06E2A79A88CFA07F80C3E7331A4BC_StaticFields, ___s_SessionDidFailWithError)),static_cast<int32_t>(offsetof(ARKitSessionDelegate_tDCFB0E756EB06E2A79A88CFA07F80C3E7331A4BC_StaticFields, ___s_CoachingOverlayViewWillActivate)),static_cast<int32_t>(offsetof(ARKitSessionDelegate_tDCFB0E756EB06E2A79A88CFA07F80C3E7331A4BC_StaticFields, ___s_CoachingOverlayViewDidDeactivate)),static_cast<int32_t>(offsetof(ARKitSessionDelegate_tDCFB0E756EB06E2A79A88CFA07F80C3E7331A4BC_StaticFields, ___s_ConfigurationChanged)),};
@@ -29948,9 +29801,6 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5107[2] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5108[3] = 
 {
 	static_cast<int32_t>(sizeof(RuntimeObject)),0,0,};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5110[1] = 
-{
-	static_cast<int32_t>(offsetof(NativeApi_t7353853701D4F1DBB2C647EE3A69C5DA3FE5802B_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5111[2] = 
 {
 	static_cast<int32_t>(offsetof(ARKitSessionSubsystem_tD70AFD32017AF902DBF6594B5B0418A4E46C3601, ___U3CsessionDelegateU3Ek__BackingField)),static_cast<int32_t>(offsetof(ARKitSessionSubsystem_tD70AFD32017AF902DBF6594B5B0418A4E46C3601_StaticFields, ___s_OnAsyncWorldMapCompleted)),};
@@ -30032,9 +29882,9 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5142[5] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5143[3] = 
 {
 	static_cast<int32_t>(sizeof(RuntimeObject)),0,0,};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5144[2] = 
+IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5144[1] = 
 {
-	static_cast<int32_t>(offsetof(ARCollaborationData_tD6250A7140E37CAAE7166DCCBAD8028C96D40C2F_StaticFields, ___k_ExceptionMsg)),static_cast<int32_t>(offsetof(ARCollaborationData_tD6250A7140E37CAAE7166DCCBAD8028C96D40C2F, ___m_NativePtr)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
+	static_cast<int32_t>(offsetof(ARCollaborationData_tD6250A7140E37CAAE7166DCCBAD8028C96D40C2F, ___m_NativePtr)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5145[4] = 
 {
 	static_cast<int32_t>(sizeof(RuntimeObject)),0,0,0,};
@@ -30065,9 +29915,9 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5158[1] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5159[4] = 
 {
 	static_cast<int32_t>(sizeof(RuntimeObject)),0,0,0,};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5161[2] = 
+IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5161[1] = 
 {
-	static_cast<int32_t>(offsetof(NSMutableData_tD8A9B0E8B362DFF9E6ADF4C4E5F7C3101EA99BBD, ___m_Self)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(NSMutableData_tD8A9B0E8B362DFF9E6ADF4C4E5F7C3101EA99BBD_StaticFields, ___k_ExceptionMsg)),};
+	static_cast<int32_t>(offsetof(NSMutableData_tD8A9B0E8B362DFF9E6ADF4C4E5F7C3101EA99BBD, ___m_Self)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5162[1] = 
 {
 	0,};
@@ -30098,51 +29948,36 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5174[1] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5176[1] = 
 {
 	static_cast<int32_t>(offsetof(Class_tB57A7F6A3FADDB9FFB6A591A7512CB2941AFC9AE, ___m_Self)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5178[1] = 
-{
-	static_cast<int32_t>(offsetof(NativeApi_t2D9D2B3E6A711977F3C23A10973FE15644BC03A0_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5180[2] = 
 {
 	static_cast<int32_t>(offsetof(ConvertRGBA32ToARGB32Job_t33717A5A3D7B762778C603CB91A108E088C3A2D5, ___rgbaImage)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(ConvertRGBA32ToARGB32Job_t33717A5A3D7B762778C603CB91A108E088C3A2D5, ___argbImage)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5181[8] = 
 {
 	static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___image)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___database)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___validator)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___width)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___height)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___physicalWidth)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___format)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(AddImageJob_tC87645CC9CD1F5CB92CEA9626494F3791B609498, ___managedReferenceImage)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5182[4] = 
+IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5182[3] = 
 {
-	static_cast<int32_t>(offsetof(ARKitImageDatabase_tDC12F69141C54AB9E3E630968DB44FC565EE1367, ___U3CselfU3Ek__BackingField)),0,static_cast<int32_t>(offsetof(ARKitImageDatabase_tDC12F69141C54AB9E3E630968DB44FC565EE1367_StaticFields, ___k_SupportedFormats)),0,};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5184[1] = 
-{
-	static_cast<int32_t>(offsetof(ARKitImageTrackingSubsystem_tAA877D185F10F54FB10813E0B87B031B5DD424D4_StaticFields, ___k_ExceptionMsg)),};
+	static_cast<int32_t>(offsetof(ARKitImageDatabase_tDC12F69141C54AB9E3E630968DB44FC565EE1367, ___U3CselfU3Ek__BackingField)),0,static_cast<int32_t>(offsetof(ARKitImageDatabase_tDC12F69141C54AB9E3E630968DB44FC565EE1367_StaticFields, ___k_SupportedFormats)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5185[5] = 
 {
 	static_cast<int32_t>(offsetof(ManagedReferenceImage_t0A3DD612124CB7A073A99C12E370F58A25D93337, ___guid)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(ManagedReferenceImage_t0A3DD612124CB7A073A99C12E370F58A25D93337, ___textureGuid)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(ManagedReferenceImage_t0A3DD612124CB7A073A99C12E370F58A25D93337, ___size)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(ManagedReferenceImage_t0A3DD612124CB7A073A99C12E370F58A25D93337, ___name)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(ManagedReferenceImage_t0A3DD612124CB7A073A99C12E370F58A25D93337, ___texture)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5188[3] = 
 {
 	static_cast<int32_t>(offsetof(MemoryLayout_t5C60A35F2C48B83D4D30AC3BE8504C1BF7B7544B, ___size)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(MemoryLayout_t5C60A35F2C48B83D4D30AC3BE8504C1BF7B7544B, ___stride)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(MemoryLayout_t5C60A35F2C48B83D4D30AC3BE8504C1BF7B7544B, ___alignment)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5189[2] = 
+IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5189[1] = 
 {
-	static_cast<int32_t>(offsetof(NativeChanges_t4525FB4889FDF4771EA635BD2946336D911F8E09, ___m_Ptr)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(NativeChanges_t4525FB4889FDF4771EA635BD2946336D911F8E09_StaticFields, ___k_ExceptionMsg)),};
+	static_cast<int32_t>(offsetof(NativeChanges_t4525FB4889FDF4771EA635BD2946336D911F8E09, ___m_Ptr)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5190[2] = 
 {
 	static_cast<int32_t>(offsetof(NativeView_t8847AA803BCE2115FE1B924903924BF62265510A, ___data)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(NativeView_t8847AA803BCE2115FE1B924903924BF62265510A, ___count)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5192[3] = 
 {
 	static_cast<int32_t>(offsetof(OSVersion_t6ADFF0F8D32CEB8FD3EA9F67D1B45F10E143C4AD, ___U3CmajorU3Ek__BackingField)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(OSVersion_t6ADFF0F8D32CEB8FD3EA9F67D1B45F10E143C4AD, ___U3CminorU3Ek__BackingField)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(OSVersion_t6ADFF0F8D32CEB8FD3EA9F67D1B45F10E143C4AD, ___U3CpointU3Ek__BackingField)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5193[1] = 
-{
-	static_cast<int32_t>(offsetof(ARKitProvider_tEE77A667B07997CF09149CDF4043DF20B8DD05A6_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5195[3] = 
 {
 	static_cast<int32_t>(offsetof(ARKitReferenceObjectEntry_t081BB3A8B1EDC944D86183F3C7FAE334BBFF2589, ___m_ReferenceOrigin)),static_cast<int32_t>(offsetof(ARKitReferenceObjectEntry_t081BB3A8B1EDC944D86183F3C7FAE334BBFF2589, ___m_ReferenceObjectBytes)),static_cast<int32_t>(offsetof(ARKitReferenceObjectEntry_t081BB3A8B1EDC944D86183F3C7FAE334BBFF2589, ___m_ARKitReferenceObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5196[1] = 
-{
-	static_cast<int32_t>(offsetof(ARKitProvider_t950991619EE098CC2E46187486BBA730C3A23E33_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5198[20] = 
 {
 	0,0,0,0,0,0,static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_TextureHumanStencilPropertyId)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_TextureHumanDepthPropertyId)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_TextureEnvironmentDepthPropertyId)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_TextureEnvironmentDepthConfidencePropertyId)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_HumanSegmentationKeywordList)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_HumanSegmentationKeywordListReadOnly)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_EnvironmentDepthKeywordList)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_EnvironmentDepthKeywordListReadOnly)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_AllDisabledShaderKeywords)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_AllDisabledShaderKeywordsReadOnly)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_DepthDisabledShaderKeywords)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_EnvironmentDepthKeywords)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564_StaticFields, ___k_HumanSegmentationKeywords)),static_cast<int32_t>(offsetof(ARKitProvider_t84890F8DDBFCA8A2A687B5FC326BE7FADE328564, ___m_OcclusionPreferenceMode)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5199[1] = 
-{
-	static_cast<int32_t>(offsetof(NativeApi_tA075534F0DAA97BB7F9C800259061921B375CCCD_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5201[2] = 
 {
 	0,0,};
@@ -30155,9 +29990,6 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5204[1] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5205[3] = 
 {
 	static_cast<int32_t>(offsetof(TransformBoundaryPositionsJob_t2ED365CB4D247881308C3219B2AA4C32DFA9AE9D, ___positionsIn)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(TransformBoundaryPositionsJob_t2ED365CB4D247881308C3219B2AA4C32DFA9AE9D, ___positionsOut)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(TransformBoundaryPositionsJob_t2ED365CB4D247881308C3219B2AA4C32DFA9AE9D, ___inverseYAxisRotation)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5207[1] = 
-{
-	static_cast<int32_t>(offsetof(NativeApi_tCE86CA95FB3DAE7DDA331A1CE168AF433237AE72_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5208[3] = 
 {
 	static_cast<int32_t>(offsetof(U3CU3Ec_tADD55225C6EBA015B2413867A377663E2F97DC67_StaticFields, ___U3CU3E9)),static_cast<int32_t>(offsetof(U3CU3Ec_tADD55225C6EBA015B2413867A377663E2F97DC67_StaticFields, ___U3CU3E9__2_0)),static_cast<int32_t>(offsetof(U3CU3Ec_tADD55225C6EBA015B2413867A377663E2F97DC67_StaticFields, ___U3CU3E9__2_1)),};
@@ -30167,24 +29999,12 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5210[1] =
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5211[3] = 
 {
 	static_cast<int32_t>(offsetof(TransformBoundaryPositionsJob_t4CF88CA781A656A5A9B07EEE99196368A63012D3, ___positionsIn)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(TransformBoundaryPositionsJob_t4CF88CA781A656A5A9B07EEE99196368A63012D3, ___positionsOut)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(TransformBoundaryPositionsJob_t4CF88CA781A656A5A9B07EEE99196368A63012D3, ___inverseYAxisRotation)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5213[1] = 
-{
-	static_cast<int32_t>(offsetof(NativeApi_t0F540686783A93DF3B9EAC18376DA4265C35303E_StaticFields, ___k_ExceptionMsg)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5215[1] = 
-{
-	static_cast<int32_t>(offsetof(ARKitProvider_t76CF670AAB55DD67940CC59F356CAFE8D61E357B_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5216[2] = 
 {
 	static_cast<int32_t>(offsetof(TransformPositionsJob_tCEEA948EBF3EFBCBDB91810675A4892D56EA5BBE, ___positionsIn)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(TransformPositionsJob_tCEEA948EBF3EFBCBDB91810675A4892D56EA5BBE, ___positionsOut)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5218[1] = 
-{
-	static_cast<int32_t>(offsetof(ARKitProvider_t0241E3BE4F5FAC1A5082B930D77BC477C521E4AF_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5219[2] = 
 {
 	static_cast<int32_t>(offsetof(TransformPositionsJob_t3211ABBFB066E13AA3BE3D0C4DC1694EAE5AA706, ___positionsIn)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(TransformPositionsJob_t3211ABBFB066E13AA3BE3D0C4DC1694EAE5AA706, ___positionsOut)) + static_cast<int32_t>(sizeof(RuntimeObject)),};
-IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5221[1] = 
-{
-	static_cast<int32_t>(offsetof(ARKitProvider_tBB59BBA46E3F493799654E097A3261975722A639_StaticFields, ___k_ExceptionMsg)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable5222[2] = 
 {
 	static_cast<int32_t>(offsetof(TransformPositionsJob_t83DB5EC0B9CEACBACF5A4629AF311118B239D248, ___positionsIn)) + static_cast<int32_t>(sizeof(RuntimeObject)),static_cast<int32_t>(offsetof(TransformPositionsJob_t83DB5EC0B9CEACBACF5A4629AF311118B239D248, ___positionsOut)) + static_cast<int32_t>(sizeof(RuntimeObject)),};

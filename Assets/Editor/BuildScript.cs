@@ -12,6 +12,7 @@ public static class BuildScript
         Debug.Log("Starting iOS build...");
 
         EnsureXRSettings();
+        EnsureARKitDefines();
 
         var options = new BuildPlayerOptions
         {
@@ -115,5 +116,29 @@ public static class BuildScript
         }
 
         Debug.Log($"[VRPiano] Final state - Settings: {settings.name}, Manager: {manager?.name}, Loaders: {manager?.activeLoaders?.Count}, InitOnStart: {settings.InitManagerOnStart}");
+    }
+
+    static void EnsureARKitDefines()
+    {
+        var target = UnityEditor.Build.NamedBuildTarget.iOS;
+        var defines = PlayerSettings.GetScriptingDefineSymbols(target);
+        var allDefines = new System.Collections.Generic.HashSet<string>(defines.Split(';'));
+
+        bool changed = false;
+        if (!allDefines.Contains("UNITY_XR_ARKIT_LOADER_ENABLED"))
+        {
+            allDefines.Add("UNITY_XR_ARKIT_LOADER_ENABLED");
+            changed = true;
+        }
+
+        if (changed)
+        {
+            PlayerSettings.SetScriptingDefineSymbols(target, string.Join(";", allDefines));
+            Debug.Log("[VRPiano] Added UNITY_XR_ARKIT_LOADER_ENABLED define");
+        }
+        else
+        {
+            Debug.Log("[VRPiano] UNITY_XR_ARKIT_LOADER_ENABLED already set");
+        }
     }
 }
