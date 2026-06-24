@@ -5,231 +5,75 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="VR Piano">
-  <title>VR Piano</title>
+  <meta name="apple-mobile-web-app-title" content="VR Piano AR">
+  <title>VR Piano AR</title>
+
+  <!-- A-Frame + AR.js loaded after START to satisfy iOS camera gesture requirement -->
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{width:100%;height:100%;background:#000;overflow:hidden;
+    html,body{width:100%;height:100%;overflow:hidden;background:#000;
               font-family:-apple-system,sans-serif;touch-action:none}
-    #video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover}
-    #canvas{position:fixed;inset:0;width:100%;height:100%}
-    #splash{position:fixed;inset:0;display:flex;flex-direction:column;
-            align-items:center;justify-content:center;gap:20px;
-            background:rgba(0,0,0,.87)}
-    #splash h1{color:#fff;font-size:30px;letter-spacing:1px}
+
+    /* Splash */
+    #splash{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);
+            display:flex;flex-direction:column;align-items:center;
+            justify-content:center;gap:18px;padding:24px}
+    #splash h1{color:#fff;font-size:28px;letter-spacing:1px}
     .sub{color:#aaa;font-size:14px;text-align:center;max-width:290px;line-height:1.55}
     #startBtn{background:#fff;color:#000;font-size:20px;font-weight:700;
-              padding:16px 52px;border:none;border-radius:14px;cursor:pointer}
-    #toast{position:fixed;top:max(14px,env(safe-area-inset-top,14px));
-           left:50%;transform:translateX(-50%);
-           background:rgba(255,255,255,.93);color:#000;font-size:14px;
-           font-weight:600;padding:9px 18px;border-radius:10px;
-           text-align:center;max-width:90vw;display:none;z-index:99}
-    #score{position:fixed;top:max(14px,env(safe-area-inset-top,14px));
-           right:16px;color:#fff;font-size:22px;font-weight:700;
-           text-shadow:0 1px 5px #000;display:none}
+              padding:14px 52px;border:none;border-radius:14px;cursor:pointer}
+
+    /* Marker modal */
+    #markerModal{position:fixed;inset:0;z-index:300;background:#000;
+                 display:none;flex-direction:column;align-items:center;
+                 justify-content:center;gap:20px;padding:24px}
+    #markerModal p{color:#fff;font-size:14px;text-align:center;max-width:320px;line-height:1.55}
+    #markerModal img{width:min(70vw,70vh);height:min(70vw,70vh);image-rendering:pixelated}
+    #closeMarker{background:#fff;color:#000;border:none;border-radius:10px;
+                 padding:12px 36px;font-size:16px;font-weight:600;cursor:pointer}
+
+    /* HUD */
+    #hc{position:fixed;inset:0;z-index:50;pointer-events:none}
+    #score{position:fixed;top:max(14px,env(safe-area-inset-top,14px));right:14px;
+           z-index:60;color:#fff;font-size:26px;font-weight:700;text-shadow:0 1px 5px #000}
+    #markerBtn{position:fixed;top:max(14px,env(safe-area-inset-top,14px));left:14px;
+               z-index:60;background:rgba(255,255,255,.15);color:#fff;
+               border:1px solid rgba(255,255,255,.35);border-radius:8px;
+               padding:8px 14px;font-size:13px;cursor:pointer;display:none}
+    #toast{position:fixed;top:max(58px,env(safe-area-inset-top,58px));left:50%;
+           transform:translateX(-50%);background:rgba(255,255,255,.93);color:#000;
+           font-size:14px;font-weight:600;padding:9px 18px;border-radius:10px;
+           z-index:70;display:none;text-align:center;max-width:88vw}
   </style>
 </head>
 <body>
-<video id="video" autoplay playsinline muted></video>
-<canvas id="canvas"></canvas>
 
+<!-- ── splash ── -->
 <div id="splash">
-  <h1>🎹 VR Piano</h1>
-  <p class="sub">Point your camera at your piano. Notes fall — press the key when it lands. Hand tracking scores your hits in real time.</p>
+  <h1>🎹 VR Piano AR</h1>
+  <p class="sub">Place the Hiro marker near your piano. Point the camera at it — 3D keys appear in AR. Notes fall in world space.</p>
   <button id="startBtn">▶ START</button>
-  <p class="sub" style="color:#555;font-size:12px;margin-top:4px">
-    Add to Home Screen for full-screen VR mode
-  </p>
+  <p class="sub" style="color:#555;font-size:12px">Tap "Show Marker" after starting to display the marker</p>
 </div>
 
-<div id="toast"></div>
+<!-- ── marker display ── -->
+<div id="markerModal">
+  <p>Print this or show it on another screen, placed near your piano</p>
+  <img src="https://ar-js-org.github.io/AR.js/data/images/HIRO.jpg" alt="Hiro marker" crossorigin="anonymous">
+  <button id="closeMarker">Got it →</button>
+</div>
+
+<!-- ── overlays ── -->
+<canvas id="hc"></canvas>
 <div id="score">0</div>
+<button id="markerBtn">🎯 Show Marker</button>
+<div id="toast"></div>
 
 <script>
 'use strict';
 
-const video    = document.getElementById('video');
-const canvas   = document.getElementById('canvas');
-const splash   = document.getElementById('splash');
-const startBtn = document.getElementById('startBtn');
-const toastEl  = document.getElementById('toast');
-const scoreEl  = document.getElementById('score');
-const ctx      = canvas.getContext('2d');
-
-let W = 0, H = 0;
-function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-resize();
-window.addEventListener('resize', resize);
-
-// ── toast ─────────────────────────────────────────────────────────────────────
-let _toastTimer;
-function toast(txt, ms = 3000){
-  toastEl.textContent = txt;
-  toastEl.style.display = 'block';
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => { toastEl.style.display = 'none'; }, ms);
-}
-
-// ── start ─────────────────────────────────────────────────────────────────────
-startBtn.addEventListener('click', async () => {
-  splash.style.display = 'none';
-  scoreEl.style.display = 'block';
-  await startCamera();
-  loadHandDetector(); // fire-and-forget; game runs without it while loading
-  requestAnimationFrame(loop);
-});
-
-// ── camera ────────────────────────────────────────────────────────────────────
-async function startCamera(){
-  try {
-    const s = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} },
-      audio: false
-    });
-    video.srcObject = s;
-    await video.play();
-  } catch(e){
-    toast('Camera error — allow camera & refresh: ' + e.message, 8000);
-  }
-}
-
-// ── MediaPipe Hands ───────────────────────────────────────────────────────────
-let handLandmarker = null;
-let handResults    = null;
-
-async function loadHandDetector(){
-  try {
-    toast('Loading hand tracking…', 15000);
-    const { HandLandmarker, FilesetResolver } = await import(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.mjs'
-    );
-    const vision = await FilesetResolver.forVisionTasks(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm'
-    );
-    handLandmarker = await HandLandmarker.createFromOptions(vision, {
-      baseOptions:{
-        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
-        delegate: 'GPU'
-      },
-      runningMode: 'VIDEO',
-      numHands: 2
-    });
-    toast('Hand tracking ready ✓', 2500);
-  } catch(e){
-    toast('Hand tracking not available — notes still play', 3000);
-  }
-}
-
-// Finger indices: thumb=4, index=8, middle=12, ring=16, pinky=20
-const TIPS = [4, 8, 12, 16, 20];
-const CONNECTIONS = [
-  [0,1],[1,2],[2,3],[3,4],
-  [0,5],[5,6],[6,7],[7,8],
-  [5,9],[9,10],[10,11],[11,12],
-  [9,13],[13,14],[14,15],[15,16],
-  [13,17],[0,17],[17,18],[18,19],[19,20]
-];
-
-let lastDetect = 0;
-function runHandDetect(ts){
-  if(!handLandmarker || video.readyState < 2 || ts - lastDetect < 33) return;
-  lastDetect = ts;
-  try { handResults = handLandmarker.detectForVideo(video, ts); } catch(e){}
-}
-
-function drawHands(){
-  if(!handResults?.landmarks?.length) return;
-  for(const lms of handResults.landmarks){
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(0,255,100,0.5)';
-    for(const [a, b] of CONNECTIONS){
-      ctx.beginPath();
-      ctx.moveTo(lms[a].x * W, lms[a].y * H);
-      ctx.lineTo(lms[b].x * W, lms[b].y * H);
-      ctx.stroke();
-    }
-    for(const i of TIPS){
-      const lm = lms[i];
-      ctx.beginPath();
-      ctx.arc(lm.x * W, lm.y * H, 9, 0, Math.PI * 2);
-      ctx.fillStyle   = i === 8 ? '#ff4455' : '#00ffaa';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-      ctx.lineWidth   = 1.5;
-      ctx.stroke();
-    }
-  }
-}
-
-// Return Set of white-key indices where a fingertip is in the press zone
-function getPressedKeys(){
-  const out = new Set();
-  if(!handResults?.landmarks?.length) return out;
-  const kb  = kbRect();
-  const top = kb.y - 50;   // 50px above keyboard top = press zone
-  const ww  = W / NUM_WHITE;
-  for(const lms of handResults.landmarks){
-    for(const i of TIPS){
-      const lm = lms[i];
-      const py = lm.y * H, px = lm.x * W;
-      if(py >= top){
-        const ki = Math.floor(px / ww);
-        if(ki >= 0 && ki < NUM_WHITE) out.add(ki);
-      }
-    }
-  }
-  return out;
-}
-
-// ── keyboard ──────────────────────────────────────────────────────────────────
-const NUM_WHITE   = 14;
-const BLACK_SLOTS = [0.6, 1.6, 3.6, 4.6, 5.6, 7.6, 8.6, 10.6, 11.6, 12.6];
-
-function kbRect(){ const kh=Math.min(H*.25,185); return {x:0,y:H-kh,w:W,h:kh}; }
-function wkRect(i){ const kb=kbRect(),ww=kb.w/NUM_WHITE; return {x:i*ww+1,y:kb.y+2,w:ww-2,h:kb.h-6}; }
-
-const flashAt = {}, missAt = {};
-
-function drawKeyboard(now, pressed){
-  const kb = kbRect(), ww = kb.w / NUM_WHITE;
-  ctx.fillStyle = 'rgba(10,10,10,.84)';
-  ctx.fillRect(kb.x, kb.y, kb.w, kb.h);
-
-  for(let i = 0; i < NUM_WHITE; i++){
-    const r = wkRect(i);
-    const hit  = flashAt[i] && (now - flashAt[i]) < 220;
-    const miss = missAt[i]  && (now - missAt[i])  < 300;
-    const hold = pressed.has(i);
-    let col = '#f0f0f0';
-    if(hit)  col = '#00eeff';
-    else if(miss) col = '#ff3344';
-    else if(hold) col = '#aaffd4';
-    ctx.fillStyle = col;
-    rrect(r.x, r.y, r.w, r.h, 3); ctx.fill();
-    ctx.strokeStyle = '#444'; ctx.lineWidth = 0.7; ctx.stroke();
-  }
-
-  const bw = ww*.58, bh = kb.h*.60;
-  ctx.fillStyle = '#0f0f0f';
-  for(const pos of BLACK_SLOTS){
-    rrect(pos*ww - bw/2, kb.y+2, bw, bh, 2); ctx.fill();
-  }
-}
-
-function rrect(x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
-  ctx.closePath();
-}
-
 // ── song ──────────────────────────────────────────────────────────────────────
-const BPM = 78, BEAT = 60/BPM, FALL_DUR = 2.0;
-
-// Twinkle Twinkle — white-key indices (C=0 D=1 E=2 F=3 G=4 A=5 B=6)
+const NUM_WHITE = 14, BPM = 78, BEAT = 60/BPM, FALL_DUR = 2.0, FALL_H = 0.28;
 const SONG_DEF = [
   [0,1],[0,1],[4,1],[4,1],[5,1],[5,1],[4,2],
   [3,1],[3,1],[2,1],[2,1],[1,1],[1,1],[0,2],
@@ -238,107 +82,267 @@ const SONG_DEF = [
   [0,1],[0,1],[4,1],[4,1],[5,1],[5,1],[4,2],
   [3,1],[3,1],[2,1],[2,1],[1,1],[1,1],[0,2],
 ];
+let songEvents = [], songDuration = 0;
+(()=>{ let t=0; for(const [wi,b] of SONG_DEF){ songEvents.push({wi,time:t}); t+=b*BEAT; } songDuration=t+BEAT*4; })();
 
-const songEvents = [];
-let songDuration = 0;
-(() => {
-  let t = 0;
-  for(const [wi, beats] of SONG_DEF){
-    songEvents.push({wi, time: t});
-    t += beats * BEAT;
-  }
-  songDuration = t + BEAT * 4;
-})();
+// ── UI helpers ─────────────────────────────────────────────────────────────────
+const splash      = document.getElementById('splash');
+const startBtn    = document.getElementById('startBtn');
+const markerModal = document.getElementById('markerModal');
+const markerBtn   = document.getElementById('markerBtn');
+const closeMarker = document.getElementById('closeMarker');
+const toastEl     = document.getElementById('toast');
+const scoreEl     = document.getElementById('score');
+const hc          = document.getElementById('hc');
+const hctx        = hc.getContext('2d');
 
-// ── particles ─────────────────────────────────────────────────────────────────
-let particles = [];
+let _tt;
+function toast(txt, ms=3000){ toastEl.textContent=txt; toastEl.style.display='block'; clearTimeout(_tt); _tt=setTimeout(()=>{ toastEl.style.display='none'; },ms); }
+function resize(){ hc.width=window.innerWidth; hc.height=window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
 
-function burst(x, y){
-  for(let i = 0; i < 14; i++){
-    const a = Math.random() * Math.PI * 2;
-    const s = 90 + Math.random() * 180;
-    particles.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s - 120, life:1, decay:1.4+Math.random()});
-  }
-}
+markerBtn.addEventListener('click', ()=>{ markerModal.style.display='flex'; });
+closeMarker.addEventListener('click', ()=>{ markerModal.style.display='none'; });
 
-function drawParticles(dt){
-  particles = particles.filter(p => {
-    p.x += p.vx*dt; p.y += p.vy*dt; p.vy += 320*dt; p.life -= p.decay*dt;
-    if(p.life <= 0) return false;
-    ctx.globalAlpha = p.life;
-    ctx.fillStyle   = '#00eeff';
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 4.5*p.life, 0, Math.PI*2);
-    ctx.fill();
-    return true;
+// ── score state shared with A-Frame component ──────────────────────────────────
+window._vrpScore = 0;
+window._vrpPressedKeys = new Set();
+
+// ── START ─────────────────────────────────────────────────────────────────────
+startBtn.addEventListener('click', async () => {
+  splash.style.display = 'none';
+  markerBtn.style.display = 'block';
+  toast('Loading AR… allow camera when asked', 8000);
+
+  // Load A-Frame + AR.js dynamically (ensures iOS camera gesture)
+  await loadScript('https://aframe.io/releases/1.4.2/aframe.min.js');
+  await loadScript('https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js');
+
+  registerPianoComponent();
+  buildARScene();
+  toast('Point camera at the Hiro marker', 6000);
+
+  // Start hand tracking in background
+  loadHandDetector();
+});
+
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s);
   });
-  ctx.globalAlpha = 1;
 }
 
-// ── game state ────────────────────────────────────────────────────────────────
-let notes    = [];
-let songTime = 0;
-let lastTs   = null, lastDt = 0;
-let curIter  = 0, spawnedInIter = 0;
-let score    = 0;
+// ── A-Frame AR scene (created dynamically) ────────────────────────────────────
+function buildARScene(){
+  const scene = document.createElement('a-scene');
+  scene.setAttribute('arjs','sourceType:webcam;debugUIEnabled:false;detectionMode:mono_and_matrix;matrixCodeType:3x3;');
+  scene.setAttribute('renderer','antialias:false;precision:medium;logarithmicDepthBuffer:true;');
+  scene.setAttribute('vr-mode-ui','enabled:false');
+  scene.setAttribute('loading-screen','enabled:false');
 
-function spawnDue(){
-  const newIter = Math.floor(songTime / songDuration);
-  if(newIter !== curIter){ curIter = newIter; spawnedInIter = 0; }
-  const iterBase = curIter * songDuration;
-  while(spawnedInIter < songEvents.length){
-    const ev = songEvents[spawnedInIter];
-    const pt = iterBase + ev.time;
-    if(pt - FALL_DUR <= songTime){
-      notes.push({wi: ev.wi, age: Math.max(0, songTime - (pt - FALL_DUR))});
-      spawnedInIter++;
-    } else break;
-  }
+  // Ambient + directional light
+  const amb = document.createElement('a-light');
+  amb.setAttribute('type','ambient'); amb.setAttribute('intensity','0.55');
+  scene.appendChild(amb);
+  const dir = document.createElement('a-light');
+  dir.setAttribute('type','directional'); dir.setAttribute('position','0 2 1');
+  dir.setAttribute('intensity','0.8'); scene.appendChild(dir);
+
+  // Piano anchored to Hiro marker
+  const marker = document.createElement('a-marker');
+  marker.setAttribute('preset','hiro');
+  marker.setAttribute('piano-anchor','');
+  scene.appendChild(marker);
+
+  const cam = document.createElement('a-entity');
+  cam.setAttribute('camera',''); scene.appendChild(cam);
+
+  document.body.appendChild(scene);
 }
 
-// ── main loop ─────────────────────────────────────────────────────────────────
-function loop(ts){
-  requestAnimationFrame(loop);
-  if(!lastTs){ lastTs = ts; return; }
-  lastDt   = Math.min((ts - lastTs) / 1000, 0.1);
-  lastTs   = ts;
-  songTime += lastDt;
+// ── Piano A-Frame component ────────────────────────────────────────────────────
+function registerPianoComponent(){
+  AFRAME.registerComponent('piano-anchor',{
+    init(){
+      this.notes=[]; this.keyEls=[]; this.songTime=0;
+      this.curIter=0; this.spawnedInIter=0;
+      this.buildKeyboard();
+    },
 
-  runHandDetect(ts);
-  spawnDue();
-
-  ctx.clearRect(0, 0, W, H);
-
-  const pressed = getPressedKeys();
-  const areaH   = kbRect().y;
-
-  notes = notes.filter(n => {
-    n.age += lastDt;
-    const prog = n.age / FALL_DUR;
-    if(prog >= 1){
-      if(pressed.has(n.wi)){
-        flashAt[n.wi] = ts;
-        scoreEl.textContent = ++score;
-        const kr = wkRect(n.wi);
-        burst(kr.x + kr.w/2, kbRect().y);
-      } else {
-        missAt[n.wi] = ts;
+    buildKeyboard(){
+      const ww=0.018, wh=0.010, wd=0.095;
+      for(let i=0;i<NUM_WHITE;i++){
+        const el=document.createElement('a-box');
+        const x=((i-NUM_WHITE/2+0.5)*ww).toFixed(4);
+        el.setAttribute('width', ww-0.001); el.setAttribute('height', wh); el.setAttribute('depth', wd);
+        el.setAttribute('position',`${x} ${(wh/2).toFixed(4)} 0`);
+        el.setAttribute('material','color:#f0f0f0;roughness:0.5;metalness:0.05');
+        this.el.appendChild(el); this.keyEls.push(el);
       }
-      return false;
-    }
-    const kr = wkRect(n.wi);
-    const nw = kr.w * .80, nh = 26;
-    const nx = kr.x + (kr.w - nw) / 2;
-    const ny = prog * areaH - nh;
-    ctx.fillStyle   = `rgba(0,210,255,${0.55 + 0.4*prog})`;
-    rrect(nx, ny, nw, nh, 5); ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1.5; ctx.stroke();
-    return true;
-  });
+      const BS=[0.6,1.6,3.6,4.6,5.6,7.6,8.6,10.6,11.6,12.6];
+      const bw=0.011,bh=0.016,bd=0.057;
+      for(const s of BS){
+        const el=document.createElement('a-box');
+        const x=((s-NUM_WHITE/2)*0.018).toFixed(4);
+        el.setAttribute('width',bw);el.setAttribute('height',bh);el.setAttribute('depth',bd);
+        el.setAttribute('position',`${x} ${(bh/2).toFixed(4)} -0.019`);
+        el.setAttribute('material','color:#111;roughness:0.2;metalness:0.3');
+        this.el.appendChild(el);
+      }
+    },
 
-  drawParticles(lastDt);
-  drawHands();
-  drawKeyboard(ts, pressed);
+    flashKey(wi, correct){
+      if(wi>=this.keyEls.length)return;
+      const el=this.keyEls[wi];
+      el.setAttribute('material',`color:${correct?'#00eeff':'#ff3344'};roughness:0.3`);
+      setTimeout(()=>el.setAttribute('material','color:#f0f0f0;roughness:0.5;metalness:0.05'), correct?220:300);
+    },
+
+    spawnNote(ev, startAge){
+      const ww=0.018;
+      const x=((ev.wi-NUM_WHITE/2+0.5)*ww).toFixed(4);
+      const prog=startAge/FALL_DUR;
+      const y=(FALL_H*(1-prog)+0.016).toFixed(4);
+      const el=document.createElement('a-box');
+      el.setAttribute('width',0.015); el.setAttribute('height',0.007); el.setAttribute('depth',0.018);
+      el.setAttribute('position',`${x} ${y} -0.010`);
+      el.setAttribute('material','color:#00d4ff;opacity:0.9;transparent:true;roughness:0.3;emissive:#003344;emissiveIntensity:0.4');
+      this.el.appendChild(el);
+      this.notes.push({wi:ev.wi, age:startAge, el});
+
+      // update projected screen positions for hand tracking
+      this._projDirty = true;
+    },
+
+    updateScreenPositions(){
+      const cam = this.el.sceneEl.camera;
+      if(!cam) return;
+      const W=window.innerWidth, H=window.innerHeight;
+      const v = new THREE.Vector3();
+      window._vrpKeyScreenPos = this.keyEls.map(el=>{
+        el.object3D.getWorldPosition(v);
+        v.project(cam);
+        return { x:(v.x+1)/2*W, y:(-v.y+1)/2*H };
+      });
+    },
+
+    tick(time, dtMs){
+      const dt=Math.min(dtMs/1000,0.1); if(dt<=0)return;
+      this.songTime+=dt;
+
+      const newIter=Math.floor(this.songTime/songDuration);
+      if(newIter!==this.curIter){this.curIter=newIter;this.spawnedInIter=0;}
+      const base=this.curIter*songDuration;
+      while(this.spawnedInIter<songEvents.length){
+        const ev=songEvents[this.spawnedInIter];
+        if(base+ev.time-FALL_DUR<=this.songTime){
+          this.spawnNote(ev, Math.max(0,this.songTime-(base+ev.time-FALL_DUR)));
+          this.spawnedInIter++;
+        }else break;
+      }
+
+      this.notes=this.notes.filter(n=>{
+        n.age+=dt;
+        const prog=n.age/FALL_DUR;
+        if(prog>=1){
+          const correct=window._vrpPressedKeys.has(n.wi);
+          this.flashKey(n.wi,correct);
+          if(correct){
+            window._vrpScore++;
+            scoreEl.textContent=window._vrpScore;
+          }
+          this.el.removeChild(n.el);
+          return false;
+        }
+        n.el.object3D.position.y=FALL_H*(1-prog)+0.016;
+        return true;
+      });
+
+      // Update projected key positions every ~10 frames
+      if(!this._projFrame) this._projFrame=0;
+      if(++this._projFrame%10===0) this.updateScreenPositions();
+    }
+  });
+}
+
+// ── MediaPipe hand tracking ────────────────────────────────────────────────────
+let handLandmarker=null, handResults=null;
+const TIPS=[4,8,12,16,20];
+const CONNS=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
+
+async function loadHandDetector(){
+  try{
+    toast('Loading hand tracking…',15000);
+    const {HandLandmarker,FilesetResolver}=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.mjs');
+    const vision=await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm');
+    handLandmarker=await HandLandmarker.createFromOptions(vision,{
+      baseOptions:{
+        modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
+        delegate:'GPU'
+      },
+      runningMode:'VIDEO', numHands:2
+    });
+    toast('Hand tracking ready ✓',2500);
+    requestAnimationFrame(handLoop);
+  }catch(e){
+    toast('Hand tracking unavailable — notes still fall',3000);
+  }
+}
+
+let lastDetect=0;
+function handLoop(ts){
+  requestAnimationFrame(handLoop);
+  const W=hc.width,H=hc.height;
+
+  // AR.js owns the video element
+  const video=document.querySelector('video');
+  if(handLandmarker && video && video.readyState>=2 && ts-lastDetect>33){
+    lastDetect=ts;
+    try{ handResults=handLandmarker.detectForVideo(video,ts); }catch(e){}
+  }
+
+  hctx.clearRect(0,0,W,H);
+
+  // Determine pressed keys
+  const pressed=new Set();
+  if(handResults?.landmarks?.length){
+    const positions=window._vrpKeyScreenPos;
+
+    for(const lms of handResults.landmarks){
+      // Draw skeleton
+      hctx.strokeStyle='rgba(0,255,100,0.5)'; hctx.lineWidth=2;
+      for(const [a,b] of CONNS){
+        hctx.beginPath();
+        hctx.moveTo(lms[a].x*W,lms[a].y*H);
+        hctx.lineTo(lms[b].x*W,lms[b].y*H);
+        hctx.stroke();
+      }
+      // Draw finger tips + detect presses
+      for(const i of TIPS){
+        const lm=lms[i];
+        hctx.beginPath(); hctx.arc(lm.x*W,lm.y*H,9,0,Math.PI*2);
+        hctx.fillStyle=i===8?'#ff4455':'#00ffaa'; hctx.fill();
+        hctx.strokeStyle='rgba(255,255,255,0.8)'; hctx.lineWidth=1.5; hctx.stroke();
+
+        // Map to key using projected 3D positions if available
+        if(positions?.length){
+          const keyW = positions.length>1 ? Math.abs(positions[1].x-positions[0].x) : W/NUM_WHITE;
+          for(let k=0;k<positions.length;k++){
+            const p=positions[k];
+            const dx=Math.abs(lm.x*W-p.x);
+            const dy=lm.y*H-p.y;
+            if(dx<keyW*0.6 && dy>-15 && dy<55) pressed.add(k);
+          }
+        } else {
+          // Fallback: bottom-zone screen mapping
+          const ky=lm.y*H, kx=lm.x*W;
+          if(ky>H*0.62){ const ki=Math.floor(kx/(W/NUM_WHITE)); if(ki>=0&&ki<NUM_WHITE) pressed.add(ki); }
+        }
+      }
+    }
+  }
+  window._vrpPressedKeys = pressed;
 }
 </script>
 </body>
