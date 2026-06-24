@@ -10,8 +10,19 @@ targets:
     platform: iOS
     sources:
       - path: Sources
+        excludes:
+          - "Info.plist"
     info:
       path: Sources/Info.plist
+      properties:
+        NSCameraUsageDescription: "Camera is required to overlay the piano in augmented reality."
+        UILaunchScreen: {}
+        UIRequiredDeviceCapabilities:
+          - arkit
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIStatusBarHidden: true
+        UIViewControllerBasedStatusBarAppearance: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dovyllis.vrpiano
