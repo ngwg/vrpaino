@@ -89,7 +89,8 @@ public class ARPianoManager : MonoBehaviour
         Destroy(go.GetComponent<BoxCollider>());
 
         var rend = go.GetComponent<Renderer>();
-        rend.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+        var shader = Shader.Find("Unlit/Color") ?? Shader.Find("Universal Render Pipeline/Unlit") ?? rend.material.shader;
+        rend.material = new Material(shader);
         rend.material.color = black ? Color.black : Color.white;
 
         var key = go.AddComponent<PianoKey>();
