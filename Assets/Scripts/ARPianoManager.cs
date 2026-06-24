@@ -3,19 +3,15 @@ using UnityEngine;
 
 public class ARPianoManager : MonoBehaviour
 {
-    // Piano anchored in front-down of camera
     public Transform cameraTransform;
-    public float distanceFromCamera = 0.7f;
-    public float heightOffset = -0.28f;
+    public float distanceFromCamera = 0.5f;
+    public float heightOffset = -0.3f;
+    public bool placed;
 
     readonly List<PianoKey> whiteKeys = new();
     readonly List<PianoKey> allKeys = new();
 
-    // White key layout: W=white, B=black (per octave, 2 octaves)
-    // Pattern: C D E F G A B  (7 white, 5 black per octave)
     static readonly bool[] IsBlack = { false, true, false, true, false, false, true, false, true, false, true, false };
-    // White key indices within chromatic scale
-    static readonly int[] ChromaticToWhite = { 0, -1, 1, -1, 2, 3, -1, 4, -1, 5, -1, 6 };
 
     const int Octaves = 2;
     const float WhiteKeyWidth = 0.032f;
@@ -31,18 +27,18 @@ public class ARPianoManager : MonoBehaviour
             cameraTransform = Camera.main.transform;
 
         BuildPiano();
+        PlacePiano();
     }
 
-    void LateUpdate()
+    void PlacePiano()
     {
-        // Smoothly follow camera so piano stays in view
-        Vector3 target = cameraTransform.position
+        Vector3 pos = cameraTransform.position
             + cameraTransform.forward * distanceFromCamera
             + Vector3.up * heightOffset;
 
-        transform.position = Vector3.Lerp(transform.position, target, Time.deltaTime * 3f);
-        Quaternion targetRot = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 3f);
+        transform.position = pos;
+        transform.rotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
+        placed = true;
     }
 
     void BuildPiano()
@@ -71,7 +67,6 @@ public class ARPianoManager : MonoBehaviour
                 }
                 else
                 {
-                    // Black key sits between the last two white keys
                     float lastWhiteX = startX + (whiteIndex - 0.5f) * WhiteKeyWidth;
                     xPos = lastWhiteX;
                     var key = CreateKey(xPos, BlackKeyHeight / 2f, (WhiteKeyDepth - BlackKeyDepth) / 2f - 0.01f,
@@ -92,6 +87,10 @@ public class ARPianoManager : MonoBehaviour
         go.transform.localPosition = new Vector3(x, yOffset, zOffset);
         go.transform.localScale = new Vector3(w, h, d);
         Destroy(go.GetComponent<BoxCollider>());
+
+        var rend = go.GetComponent<Renderer>();
+        rend.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+        rend.material.color = black ? Color.black : Color.white;
 
         var key = go.AddComponent<PianoKey>();
         key.noteIndex = index;

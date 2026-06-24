@@ -17,7 +17,8 @@ public class PianoKey : MonoBehaviour
     {
         rend = GetComponent<Renderer>();
         baseColor = isBlackKey ? Color.black : Color.white;
-        rend.material.color = baseColor;
+        if (rend.material != null)
+            rend.material.color = baseColor;
     }
 
     void Update()

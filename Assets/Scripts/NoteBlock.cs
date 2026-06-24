@@ -29,7 +29,9 @@ public class NoteBlock : MonoBehaviour
         noteIndex = note;
         targetKey = key;
         fallSpeed = speed;
-        GetComponent<Renderer>().material.color = NoteColors[note % NoteColors.Length];
+        var rend = GetComponent<Renderer>();
+        rend.material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+        rend.material.color = NoteColors[note % NoteColors.Length];
     }
 
     void Update()
