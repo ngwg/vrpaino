@@ -1,16 +1,19 @@
 import UIKit
 import ARKit
 import RealityKit
-import AVFoundation
 
 class ViewController: UIViewController {
 
-    private var arView: ARView?
+    // MARK: - Properties
+
+    private var arView: ARView!
     private var statusLabel: UILabel!
 
-    private var isPlaced = false
+    private var isPlaced        = false
     private var indicatorAnchor: AnchorEntity?
+    private var indicatorEntity: ModelEntity?
 
+    private var pianoAnchor: AnchorEntity?
     private var pianoEntity: PianoEntity?
     private var noteSpawner: NoteSpawner?
 
@@ -21,102 +24,87 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
+        setupARView()
         setupStatusLabel()
-        showStatus("Requesting camera access...")
-        checkCameraPermission()
+        setupDisplayLink()
     }
 
-    // MARK: - Camera permission
-
-    private func checkCameraPermission() {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
-            setupAR()
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
-                DispatchQueue.main.async {
-                    if granted {
-                        self?.setupAR()
-                    } else {
-                        self?.showStatus("Camera access denied.\n\nGo to Settings › Privacy › Camera\nand enable access for this app.")
-                    }
-                }
-            }
-        case .denied, .restricted:
-            showStatus("Camera access denied.\n\nGo to Settings › Privacy › Camera\nand enable access for this app.")
-        @unknown default:
-            setupAR()
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        startARSession()
     }
 
-    // MARK: - AR setup (called after permission granted)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        arView.session.pause()
+        displayLink?.invalidate()
+    }
 
-    private func setupAR() {
-        let ar = ARView(frame: view.bounds, cameraMode: .ar, automaticallyConfigureSession: false)
-        ar.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.insertSubview(ar, at: 0)          // behind status label
-        ar.session.delegate = self
-        arView = ar
+    // MARK: - AR Setup
+
+    private func setupARView() {
+        arView = ARView(frame: view.bounds,
+                        cameraMode: .ar,
+                        automaticallyConfigureSession: false)
+        arView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(arView)
+        arView.session.delegate = self
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        ar.addGestureRecognizer(tap)
+        arView.addGestureRecognizer(tap)
+    }
 
+    private func startARSession() {
         let config = ARWorldTrackingConfiguration()
         config.planeDetection = [.horizontal]
-        ar.session.run(config, options: [.resetTracking, .removeExistingAnchors])
-
-        setupDisplayLink()
+        arView.session.run(config, options: [.resetTracking, .removeExistingAnchors])
         showStatus("Move phone over a flat surface")
     }
 
     // MARK: - Status label
 
     private func setupStatusLabel() {
-        statusLabel = UILabel()
-        statusLabel.text = "Starting..."
-        statusLabel.textColor = .black
-        statusLabel.backgroundColor = UIColor.white.withAlphaComponent(0.88)
-        statusLabel.textAlignment = .center
-        statusLabel.numberOfLines = 0
-        statusLabel.font = .systemFont(ofSize: 17, weight: .semibold)
-        statusLabel.layer.cornerRadius = 12
-        statusLabel.clipsToBounds = true
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(statusLabel)
+        let label = UILabel()
+        label.textColor = .black
+        label.backgroundColor = UIColor.white.withAlphaComponent(0.90)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.layer.cornerRadius = 12
+        label.clipsToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
         NSLayoutConstraint.activate([
-            statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            statusLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            statusLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85),
-            statusLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 54),
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            label.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85),
+            label.heightAnchor.constraint(greaterThanOrEqualToConstant: 50),
         ])
-        // Padding via insets
-        statusLabel.layoutMargins = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+        statusLabel = label
     }
 
     private func showStatus(_ text: String) {
         DispatchQueue.main.async { [weak self] in
-            self?.statusLabel.text = text
-            self?.statusLabel.isHidden = false
+            self?.statusLabel?.text = "  \(text)  "
+            self?.statusLabel?.isHidden = false
         }
     }
 
     private func hideStatus() {
         DispatchQueue.main.async { [weak self] in
-            self?.statusLabel.isHidden = true
+            self?.statusLabel?.isHidden = true
         }
     }
 
     // MARK: - Display link
 
     private func setupDisplayLink() {
-        displayLink?.invalidate()
-        displayLink = CADisplayLink(target: self, selector: #selector(onFrame(_:)))
-        displayLink?.add(to: .main, forMode: .default)
+        let link = CADisplayLink(target: self, selector: #selector(onFrame(_:)))
+        link.add(to: .main, forMode: .default)
+        displayLink = link
     }
 
     @objc private func onFrame(_ link: CADisplayLink) {
-        guard let ar = arView else { return }
         let dt: Float
         if lastTimestamp == 0 {
             dt = 0
@@ -127,7 +115,7 @@ class ViewController: UIViewController {
         guard dt > 0, dt < 0.1 else { return }
 
         if !isPlaced {
-            updatePlacementIndicator(ar: ar)
+            updatePlacementIndicator()
         } else {
             noteSpawner?.update(deltaTime: dt)
         }
@@ -135,20 +123,23 @@ class ViewController: UIViewController {
 
     // MARK: - Placement indicator
 
-    private func updatePlacementIndicator(ar: ARView) {
-        let center = CGPoint(x: ar.bounds.midX, y: ar.bounds.midY)
-        let hits = ar.raycast(from: center, allowing: .estimatedPlane, alignment: .horizontal)
+    private func updatePlacementIndicator() {
+        let centre = CGPoint(x: arView.bounds.midX, y: arView.bounds.midY)
+        let hits = arView.raycast(from: centre,
+                                  allowing: .estimatedPlane,
+                                  alignment: .horizontal)
 
         if let hit = hits.first {
             if indicatorAnchor == nil {
-                let mesh = MeshResource.generateBox(width: 0.24, height: 0.003, depth: 0.24)
+                let mesh = MeshResource.generateBox(width: 0.30, height: 0.003, depth: 0.16)
                 var mat = SimpleMaterial()
-                mat.color = .init(tint: UIColor.green.withAlphaComponent(0.8))
+                mat.color = .init(tint: UIColor.systemGreen.withAlphaComponent(0.75))
                 let entity = ModelEntity(mesh: mesh, materials: [mat])
                 let anchor = AnchorEntity(world: hit.worldTransform)
                 anchor.addChild(entity)
-                ar.scene.addAnchor(anchor)
+                arView.scene.addAnchor(anchor)
                 indicatorAnchor = anchor
+                indicatorEntity = entity
             } else {
                 indicatorAnchor?.transform = Transform(matrix: hit.worldTransform)
             }
@@ -163,46 +154,62 @@ class ViewController: UIViewController {
     // MARK: - Tap to place
 
     @objc private func handleTap(_ recognizer: UITapGestureRecognizer) {
-        guard !isPlaced, let ar = arView else { return }
-        let point = recognizer.location(in: ar)
-        let hit = ar.raycast(from: point, allowing: .existingPlaneGeometry, alignment: .horizontal).first
-                ?? ar.raycast(from: point, allowing: .estimatedPlane, alignment: .horizontal).first
+        guard !isPlaced else { return }
+
+        let point = recognizer.location(in: arView)
+        let hit = arView.raycast(from: point,
+                                 allowing: .existingPlaneGeometry,
+                                 alignment: .horizontal).first
+                ?? arView.raycast(from: point,
+                                  allowing: .estimatedPlane,
+                                  alignment: .horizontal).first
         guard let h = hit else { return }
-        placePiano(ar: ar, worldTransform: h.worldTransform)
+
+        placePiano(at: h.worldTransform)
     }
 
     // MARK: - Place piano
 
-    private func placePiano(ar: ARView, worldTransform: float4x4) {
+    private func placePiano(at worldTransform: float4x4) {
         isPlaced = true
+
+        // Remove indicator
         indicatorAnchor?.removeFromParent()
         indicatorAnchor = nil
-        hideStatus()
+        indicatorEntity = nil
 
-        let anchor = AnchorEntity(world: worldTransform)
-        ar.scene.addAnchor(anchor)
-
-        let piano = PianoEntity()
-        let camPos = ar.cameraTransform.translation
+        // Rotate so keyboard faces camera
+        let camPos = arView.cameraTransform.translation
         let px = worldTransform.columns.3.x
         let pz = worldTransform.columns.3.z
-        piano.orientation = simd_quatf(angle: atan2(camPos.x - px, camPos.z - pz), axis: [0, 1, 0])
+        let angle = atan2(camPos.x - px, camPos.z - pz)
 
+        let anchor = AnchorEntity(world: worldTransform)
+        arView.scene.addAnchor(anchor)
+        pianoAnchor = anchor
+
+        let piano = PianoEntity()
+        piano.orientation = simd_quatf(angle: angle, axis: [0, 1, 0])
         anchor.addChild(piano)
         pianoEntity = piano
+
         noteSpawner = NoteSpawner(piano: piano)
+        hideStatus()
     }
 }
 
 // MARK: - ARSessionDelegate
 
 extension ViewController: ARSessionDelegate {
+
     func session(_ session: ARSession, didFailWithError error: Error) {
         showStatus("AR error: \(error.localizedDescription)")
     }
+
     func sessionWasInterrupted(_ session: ARSession) {
         showStatus("Session interrupted")
     }
+
     func sessionInterruptionEnded(_ session: ARSession) {
         if isPlaced { hideStatus() }
     }
