@@ -38,7 +38,12 @@ public class NoteSpawner : MonoBehaviour
     IEnumerator PlaySong()
     {
         float beatDuration = 60f / bpm;
-        yield return new WaitForSeconds(1f); // brief startup delay
+
+        // Wait until piano is placed on a surface
+        while (pianoManager != null && !pianoManager.placed)
+            yield return null;
+
+        yield return new WaitForSeconds(1f);
 
         while (true)
         {

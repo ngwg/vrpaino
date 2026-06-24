@@ -107,6 +107,17 @@ public class AppStartup : MonoBehaviour
         }
 
         Debug.Log($"[VRPiano] AR state: {ARSession.state}");
+        ShowStatus("Look at a flat surface\nto place the piano");
+
+        // Wait until piano is placed, then hide
+        var piano = FindAnyObjectByType<ARPianoManager>();
+        if (piano != null)
+        {
+            while (!piano.placed)
+                yield return null;
+            ShowStatus("Piano placed!");
+            yield return new WaitForSeconds(1.5f);
+        }
         HideStatus();
     }
 

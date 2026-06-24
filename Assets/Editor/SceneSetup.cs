@@ -4,6 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 public static class SceneSetup
 {
@@ -42,6 +43,12 @@ public static class SceneSetup
         cameraGo.AddComponent<ARCameraBackground>();
         xrOrigin.Camera = cam;
 
+        // AR Plane Detection (for surface placement)
+        var planeManager = originGo.AddComponent<ARPlaneManager>();
+        planeManager.requestedDetectionMode = PlaneDetectionMode.Horizontal;
+        originGo.AddComponent<ARRaycastManager>();
+        originGo.AddComponent<ARAnchorManager>();
+
         // Directional Light
         var lightGo = new GameObject("Directional Light");
         var light = lightGo.AddComponent<Light>();
@@ -51,7 +58,6 @@ public static class SceneSetup
 
         // Piano Root
         var pianoRoot = new GameObject("Piano Root");
-        pianoRoot.transform.position = new Vector3(0, -0.28f, 0.7f);
         var manager = pianoRoot.AddComponent<ARPianoManager>();
         manager.cameraTransform = cameraGo.transform;
 
