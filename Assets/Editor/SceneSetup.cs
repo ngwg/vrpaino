@@ -20,10 +20,14 @@ public static class SceneSetup
             Object.DestroyImmediate(go);
 
         // AR Session (disabled — AppStartup enables it after camera permission)
+        // ARInputManager must be on a separate always-enabled GO —
+        // ARSession starts disabled and would prevent ARInputManager.OnEnable
+        var inputManagerGo = new GameObject("AR Input Manager");
+        inputManagerGo.AddComponent<ARInputManager>();
+
         var sessionGo = new GameObject("AR Session");
         var arSession = sessionGo.AddComponent<ARSession>();
         arSession.enabled = false;
-        sessionGo.AddComponent<ARInputManager>();
         sessionGo.AddComponent<AppStartup>();
 
         // XR Origin
@@ -43,11 +47,14 @@ public static class SceneSetup
         cam.backgroundColor = Color.black;
         cam.nearClipPlane = 0.01f;
         var tpd = cameraGo.AddComponent<TrackedPoseDriver>();
-        // Explicit bindings required when adding TrackedPoseDriver via code
-        var posAction = new InputAction("devicePosition", InputActionType.Value,
-            "<HandheldARInputDevice>/devicePosition");
-        var rotAction = new InputAction("deviceRotation", InputActionType.Value,
-            "<HandheldARInputDevice>/deviceRotation");
+        // Match exactly what AR Foundation's XROriginCreateUtil sets up:
+        // two bindings per action (XRHMD + HandheldARInputDevice)
+        var posAction = new InputAction("Position", InputActionType.Value,
+            binding: "<XRHMD>/centerEyePosition", expectedControlType: "Vector3");
+        posAction.AddBinding("<HandheldARInputDevice>/devicePosition");
+        var rotAction = new InputAction("Rotation", InputActionType.Value,
+            binding: "<XRHMD>/centerEyeRotation", expectedControlType: "Quaternion");
+        rotAction.AddBinding("<HandheldARInputDevice>/deviceRotation");
         tpd.positionInput = new InputActionProperty(posAction);
         tpd.rotationInput = new InputActionProperty(rotAction);
         tpd.updateType = TrackedPoseDriver.UpdateType.BeforeRender;
