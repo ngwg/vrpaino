@@ -30,3 +30,5 @@ targets:
         embed: false
       - framework: Metal.framework
         embed: false
+      - framework: AVFoundation.framework
+        embed: false
