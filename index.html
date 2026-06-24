@@ -9,157 +9,227 @@
   <title>VR Piano</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{
-      width:100%;height:100%;
-      background:#000;overflow:hidden;
-      font-family:-apple-system,sans-serif;
-      touch-action:none;
-    }
-    #video{
-      position:fixed;inset:0;
-      width:100%;height:100%;
-      object-fit:cover;
-    }
-    #canvas{
-      position:fixed;inset:0;
-      width:100%;height:100%;
-    }
-    #splash{
-      position:fixed;inset:0;
-      display:flex;flex-direction:column;
-      align-items:center;justify-content:center;gap:24px;
-      background:rgba(0,0,0,.82);
-    }
-    #splash h1{color:#fff;font-size:32px;letter-spacing:1px}
-    #splash p{color:#aaa;font-size:15px;text-align:center;max-width:280px;line-height:1.5}
-    #startBtn{
-      background:#fff;color:#000;
-      font-size:20px;font-weight:700;
-      padding:18px 52px;border:none;
-      border-radius:14px;cursor:pointer;
-    }
-    #errMsg{
-      position:fixed;
-      top:max(16px,env(safe-area-inset-top,16px));
-      left:50%;transform:translateX(-50%);
-      background:rgba(255,255,255,.93);
-      color:#000;font-size:14px;font-weight:600;
-      padding:10px 18px;border-radius:10px;
-      text-align:center;max-width:90vw;
-      display:none;z-index:99;
-    }
+    html,body{width:100%;height:100%;background:#000;overflow:hidden;
+              font-family:-apple-system,sans-serif;touch-action:none}
+    #video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover}
+    #canvas{position:fixed;inset:0;width:100%;height:100%}
+    #splash{position:fixed;inset:0;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;gap:20px;
+            background:rgba(0,0,0,.87)}
+    #splash h1{color:#fff;font-size:30px;letter-spacing:1px}
+    .sub{color:#aaa;font-size:14px;text-align:center;max-width:290px;line-height:1.55}
+    #startBtn{background:#fff;color:#000;font-size:20px;font-weight:700;
+              padding:16px 52px;border:none;border-radius:14px;cursor:pointer}
+    #toast{position:fixed;top:max(14px,env(safe-area-inset-top,14px));
+           left:50%;transform:translateX(-50%);
+           background:rgba(255,255,255,.93);color:#000;font-size:14px;
+           font-weight:600;padding:9px 18px;border-radius:10px;
+           text-align:center;max-width:90vw;display:none;z-index:99}
+    #score{position:fixed;top:max(14px,env(safe-area-inset-top,14px));
+           right:16px;color:#fff;font-size:22px;font-weight:700;
+           text-shadow:0 1px 5px #000;display:none}
   </style>
 </head>
 <body>
 <video id="video" autoplay playsinline muted></video>
 <canvas id="canvas"></canvas>
+
 <div id="splash">
   <h1>🎹 VR Piano</h1>
-  <p>Point your camera at your piano. Notes fall to show what to play next.</p>
+  <p class="sub">Point your camera at your piano. Notes fall — press the key when it lands. Hand tracking scores your hits in real time.</p>
   <button id="startBtn">▶ START</button>
-  <p style="color:#666;font-size:13px">For VR headset: add to Home Screen first</p>
+  <p class="sub" style="color:#555;font-size:12px;margin-top:4px">
+    Add to Home Screen for full-screen VR mode
+  </p>
 </div>
-<div id="errMsg"></div>
+
+<div id="toast"></div>
+<div id="score">0</div>
 
 <script>
 'use strict';
+
 const video    = document.getElementById('video');
 const canvas   = document.getElementById('canvas');
 const splash   = document.getElementById('splash');
 const startBtn = document.getElementById('startBtn');
-const errMsg   = document.getElementById('errMsg');
+const toastEl  = document.getElementById('toast');
+const scoreEl  = document.getElementById('score');
 const ctx      = canvas.getContext('2d');
 
-// ─── resize ──────────────────────────────────────────────────────────────────
-function resize(){
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
+let W = 0, H = 0;
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 resize();
 window.addEventListener('resize', resize);
 
-// ─── start ───────────────────────────────────────────────────────────────────
+// ── toast ─────────────────────────────────────────────────────────────────────
+let _toastTimer;
+function toast(txt, ms = 3000){
+  toastEl.textContent = txt;
+  toastEl.style.display = 'block';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { toastEl.style.display = 'none'; }, ms);
+}
+
+// ── start ─────────────────────────────────────────────────────────────────────
 startBtn.addEventListener('click', async () => {
   splash.style.display = 'none';
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ ideal:'environment' }, width:{ ideal:1920 }, height:{ ideal:1080 } },
-      audio: false
-    });
-    video.srcObject = stream;
-    await video.play();
-  } catch(e){
-    showErr('Camera error – allow camera access and refresh.\n' + e.message);
-  }
+  scoreEl.style.display = 'block';
+  await startCamera();
+  loadHandDetector(); // fire-and-forget; game runs without it while loading
   requestAnimationFrame(loop);
 });
 
-function showErr(txt){
-  errMsg.textContent = txt;
-  errMsg.style.display = 'block';
-  setTimeout(()=>{ errMsg.style.display='none'; }, 4000);
+// ── camera ────────────────────────────────────────────────────────────────────
+async function startCamera(){
+  try {
+    const s = await navigator.mediaDevices.getUserMedia({
+      video:{ facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} },
+      audio: false
+    });
+    video.srcObject = s;
+    await video.play();
+  } catch(e){
+    toast('Camera error — allow camera & refresh: ' + e.message, 8000);
+  }
 }
 
-// ─── keyboard geometry ────────────────────────────────────────────────────────
-const NUM_WHITE   = 14;   // C4–B5, two octaves
+// ── MediaPipe Hands ───────────────────────────────────────────────────────────
+let handLandmarker = null;
+let handResults    = null;
+
+async function loadHandDetector(){
+  try {
+    toast('Loading hand tracking…', 15000);
+    const { HandLandmarker, FilesetResolver } = await import(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.mjs'
+    );
+    const vision = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm'
+    );
+    handLandmarker = await HandLandmarker.createFromOptions(vision, {
+      baseOptions:{
+        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
+        delegate: 'GPU'
+      },
+      runningMode: 'VIDEO',
+      numHands: 2
+    });
+    toast('Hand tracking ready ✓', 2500);
+  } catch(e){
+    toast('Hand tracking not available — notes still play', 3000);
+  }
+}
+
+// Finger indices: thumb=4, index=8, middle=12, ring=16, pinky=20
+const TIPS = [4, 8, 12, 16, 20];
+const CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],
+  [0,5],[5,6],[6,7],[7,8],
+  [5,9],[9,10],[10,11],[11,12],
+  [9,13],[13,14],[14,15],[15,16],
+  [13,17],[0,17],[17,18],[18,19],[19,20]
+];
+
+let lastDetect = 0;
+function runHandDetect(ts){
+  if(!handLandmarker || video.readyState < 2 || ts - lastDetect < 33) return;
+  lastDetect = ts;
+  try { handResults = handLandmarker.detectForVideo(video, ts); } catch(e){}
+}
+
+function drawHands(){
+  if(!handResults?.landmarks?.length) return;
+  for(const lms of handResults.landmarks){
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(0,255,100,0.5)';
+    for(const [a, b] of CONNECTIONS){
+      ctx.beginPath();
+      ctx.moveTo(lms[a].x * W, lms[a].y * H);
+      ctx.lineTo(lms[b].x * W, lms[b].y * H);
+      ctx.stroke();
+    }
+    for(const i of TIPS){
+      const lm = lms[i];
+      ctx.beginPath();
+      ctx.arc(lm.x * W, lm.y * H, 9, 0, Math.PI * 2);
+      ctx.fillStyle   = i === 8 ? '#ff4455' : '#00ffaa';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+    }
+  }
+}
+
+// Return Set of white-key indices where a fingertip is in the press zone
+function getPressedKeys(){
+  const out = new Set();
+  if(!handResults?.landmarks?.length) return out;
+  const kb  = kbRect();
+  const top = kb.y - 50;   // 50px above keyboard top = press zone
+  const ww  = W / NUM_WHITE;
+  for(const lms of handResults.landmarks){
+    for(const i of TIPS){
+      const lm = lms[i];
+      const py = lm.y * H, px = lm.x * W;
+      if(py >= top){
+        const ki = Math.floor(px / ww);
+        if(ki >= 0 && ki < NUM_WHITE) out.add(ki);
+      }
+    }
+  }
+  return out;
+}
+
+// ── keyboard ──────────────────────────────────────────────────────────────────
+const NUM_WHITE   = 14;
 const BLACK_SLOTS = [0.6, 1.6, 3.6, 4.6, 5.6, 7.6, 8.6, 10.6, 11.6, 12.6];
 
-function kbRect(){
-  const h = canvas.height, w = canvas.width;
-  const kh = Math.min(h * 0.25, 180);
-  return { x:0, y:h-kh, w, h:kh };
-}
-function wkRect(i){          // white-key i → screen rect
+function kbRect(){ const kh=Math.min(H*.25,185); return {x:0,y:H-kh,w:W,h:kh}; }
+function wkRect(i){ const kb=kbRect(),ww=kb.w/NUM_WHITE; return {x:i*ww+1,y:kb.y+2,w:ww-2,h:kb.h-6}; }
+
+const flashAt = {}, missAt = {};
+
+function drawKeyboard(now, pressed){
   const kb = kbRect(), ww = kb.w / NUM_WHITE;
-  return { x: i*ww+1, y: kb.y+2, w: ww-2, h: kb.h-6 };
-}
-
-// ─── drawing ──────────────────────────────────────────────────────────────────
-const flashAt = {};   // whiteIndex → performance.now() of last hit
-
-function drawKeyboard(now){
-  const kb  = kbRect(), ww = kb.w / NUM_WHITE;
-  const FLASH = 220; // ms
-
-  ctx.fillStyle = 'rgba(12,12,12,.85)';
+  ctx.fillStyle = 'rgba(10,10,10,.84)';
   ctx.fillRect(kb.x, kb.y, kb.w, kb.h);
 
-  for(let i=0;i<NUM_WHITE;i++){
+  for(let i = 0; i < NUM_WHITE; i++){
     const r = wkRect(i);
-    const lit = flashAt[i] && (now - flashAt[i]) < FLASH;
-    ctx.fillStyle = lit ? '#00e8ff' : '#f4f4f4';
-    rrect(r.x, r.y, r.w, r.h, 3);
-    ctx.fill();
-    ctx.strokeStyle = '#444';
-    ctx.lineWidth = 0.7;
-    ctx.stroke();
+    const hit  = flashAt[i] && (now - flashAt[i]) < 220;
+    const miss = missAt[i]  && (now - missAt[i])  < 300;
+    const hold = pressed.has(i);
+    let col = '#f0f0f0';
+    if(hit)  col = '#00eeff';
+    else if(miss) col = '#ff3344';
+    else if(hold) col = '#aaffd4';
+    ctx.fillStyle = col;
+    rrect(r.x, r.y, r.w, r.h, 3); ctx.fill();
+    ctx.strokeStyle = '#444'; ctx.lineWidth = 0.7; ctx.stroke();
   }
 
-  const bw = ww*0.58, bh = kb.h*0.60;
+  const bw = ww*.58, bh = kb.h*.60;
+  ctx.fillStyle = '#0f0f0f';
   for(const pos of BLACK_SLOTS){
-    ctx.fillStyle = '#111';
-    rrect(pos*ww - bw/2, kb.y+2, bw, bh, 2);
-    ctx.fill();
+    rrect(pos*ww - bw/2, kb.y+2, bw, bh, 2); ctx.fill();
   }
 }
 
 function rrect(x,y,w,h,r){
   ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,   x+w,y+r);
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,  y+h,x,  y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,  y,  x+r,y);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
   ctx.closePath();
 }
 
-// ─── song ─────────────────────────────────────────────────────────────────────
-// White-key indices: C=0 D=1 E=2 F=3 G=4 A=5 B=6 (first octave)
-const BPM      = 78;
-const BEAT     = 60 / BPM;   // seconds per beat
-const FALL_DUR = 2.0;         // seconds a note takes to fall
+// ── song ──────────────────────────────────────────────────────────────────────
+const BPM = 78, BEAT = 60/BPM, FALL_DUR = 2.0;
 
-// Twinkle Twinkle Little Star  [white-key-index, duration-in-beats]
+// Twinkle Twinkle — white-key indices (C=0 D=1 E=2 F=3 G=4 A=5 B=6)
 const SONG_DEF = [
   [0,1],[0,1],[4,1],[4,1],[5,1],[5,1],[4,2],
   [3,1],[3,1],[2,1],[2,1],[1,1],[1,1],[0,2],
@@ -171,90 +241,104 @@ const SONG_DEF = [
 
 const songEvents = [];
 let songDuration = 0;
-(()=>{
+(() => {
   let t = 0;
   for(const [wi, beats] of SONG_DEF){
-    songEvents.push({ wi, time: t });
+    songEvents.push({wi, time: t});
     t += beats * BEAT;
   }
-  songDuration = t + BEAT * 4;   // pause before loop
+  songDuration = t + BEAT * 4;
 })();
 
-// ─── game state ───────────────────────────────────────────────────────────────
-let notes    = [];   // { wi, age }
-let songTime = 0;    // ever-increasing wall time (seconds)
-let lastTs   = null;
-let lastDt   = 0;
+// ── particles ─────────────────────────────────────────────────────────────────
+let particles = [];
 
-// Spawn tracking: per song-iteration
-let curIter       = 0;
-let spawnedInIter = 0;   // how many events spawned in curIter
-
-function spawnDue(){
-  const iterBase = curIter * songDuration;
-  const newIter  = Math.floor(songTime / songDuration);
-
-  if(newIter !== curIter){
-    curIter       = newIter;
-    spawnedInIter = 0;
-  }
-
-  while(spawnedInIter < songEvents.length){
-    const ev       = songEvents[spawnedInIter];
-    const playTime = iterBase + ev.time;
-    if(playTime - FALL_DUR <= songTime){
-      const age = Math.max(0, songTime - (playTime - FALL_DUR));
-      notes.push({ wi: ev.wi, age });
-      spawnedInIter++;
-    } else {
-      break;
-    }
+function burst(x, y){
+  for(let i = 0; i < 14; i++){
+    const a = Math.random() * Math.PI * 2;
+    const s = 90 + Math.random() * 180;
+    particles.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s - 120, life:1, decay:1.4+Math.random()});
   }
 }
 
-// ─── main loop ────────────────────────────────────────────────────────────────
+function drawParticles(dt){
+  particles = particles.filter(p => {
+    p.x += p.vx*dt; p.y += p.vy*dt; p.vy += 320*dt; p.life -= p.decay*dt;
+    if(p.life <= 0) return false;
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle   = '#00eeff';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 4.5*p.life, 0, Math.PI*2);
+    ctx.fill();
+    return true;
+  });
+  ctx.globalAlpha = 1;
+}
+
+// ── game state ────────────────────────────────────────────────────────────────
+let notes    = [];
+let songTime = 0;
+let lastTs   = null, lastDt = 0;
+let curIter  = 0, spawnedInIter = 0;
+let score    = 0;
+
+function spawnDue(){
+  const newIter = Math.floor(songTime / songDuration);
+  if(newIter !== curIter){ curIter = newIter; spawnedInIter = 0; }
+  const iterBase = curIter * songDuration;
+  while(spawnedInIter < songEvents.length){
+    const ev = songEvents[spawnedInIter];
+    const pt = iterBase + ev.time;
+    if(pt - FALL_DUR <= songTime){
+      notes.push({wi: ev.wi, age: Math.max(0, songTime - (pt - FALL_DUR))});
+      spawnedInIter++;
+    } else break;
+  }
+}
+
+// ── main loop ─────────────────────────────────────────────────────────────────
 function loop(ts){
   requestAnimationFrame(loop);
-  if(lastTs === null){ lastTs = ts; return; }
+  if(!lastTs){ lastTs = ts; return; }
   lastDt   = Math.min((ts - lastTs) / 1000, 0.1);
   lastTs   = ts;
   songTime += lastDt;
 
+  runHandDetect(ts);
   spawnDue();
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, W, H);
 
-  const areaH = kbRect().y;   // height of note-fall zone
-  const now   = ts;
+  const pressed = getPressedKeys();
+  const areaH   = kbRect().y;
 
   notes = notes.filter(n => {
     n.age += lastDt;
     const prog = n.age / FALL_DUR;
-
     if(prog >= 1){
-      flashAt[n.wi] = now;
+      if(pressed.has(n.wi)){
+        flashAt[n.wi] = ts;
+        scoreEl.textContent = ++score;
+        const kr = wkRect(n.wi);
+        burst(kr.x + kr.w/2, kbRect().y);
+      } else {
+        missAt[n.wi] = ts;
+      }
       return false;
     }
-
     const kr = wkRect(n.wi);
-    const nw = kr.w * 0.80, nh = 26;
+    const nw = kr.w * .80, nh = 26;
     const nx = kr.x + (kr.w - nw) / 2;
     const ny = prog * areaH - nh;
-
-    // note body
-    const alpha = 0.55 + 0.4 * prog;
-    ctx.fillStyle = `rgba(0,210,255,${alpha})`;
-    rrect(nx, ny, nw, nh, 5);
-    ctx.fill();
-    // bright border
-    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
+    ctx.fillStyle   = `rgba(0,210,255,${0.55 + 0.4*prog})`;
+    rrect(nx, ny, nw, nh, 5); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1.5; ctx.stroke();
     return true;
   });
 
-  drawKeyboard(now);
+  drawParticles(lastDt);
+  drawHands();
+  drawKeyboard(ts, pressed);
 }
 </script>
 </body>
