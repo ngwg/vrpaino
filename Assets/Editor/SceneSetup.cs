@@ -23,6 +23,7 @@ public static class SceneSetup
         var sessionGo = new GameObject("AR Session");
         var arSession = sessionGo.AddComponent<ARSession>();
         arSession.enabled = false;
+        sessionGo.AddComponent<ARInputManager>();
         sessionGo.AddComponent<AppStartup>();
 
         // XR Origin
