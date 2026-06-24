@@ -3694,6 +3694,14 @@ void RegisterAllStrippedInternalCalls()
 		void Register_UnityEngine_SystemInfo_MaxGraphicsBufferSize();
 		Register_UnityEngine_SystemInfo_MaxGraphicsBufferSize();
 
+		//System.Void UnityEngine.SystemInfo::GetDeviceModel_Injected(UnityEngine.Bindings.ManagedSpanWrapper&)
+		void Register_UnityEngine_SystemInfo_GetDeviceModel_Injected();
+		Register_UnityEngine_SystemInfo_GetDeviceModel_Injected();
+
+		//System.Void UnityEngine.SystemInfo::GetOperatingSystem_Injected(UnityEngine.Bindings.ManagedSpanWrapper&)
+		void Register_UnityEngine_SystemInfo_GetOperatingSystem_Injected();
+		Register_UnityEngine_SystemInfo_GetOperatingSystem_Injected();
+
 		//UnityEngine.Experimental.Rendering.GraphicsFormat UnityEngine.SystemInfo::GetCompatibleFormat(UnityEngine.Experimental.Rendering.GraphicsFormat,UnityEngine.Experimental.Rendering.GraphicsFormatUsage)
 		void Register_UnityEngine_SystemInfo_GetCompatibleFormat();
 		Register_UnityEngine_SystemInfo_GetCompatibleFormat();

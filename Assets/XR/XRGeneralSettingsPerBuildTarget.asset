@@ -78,4 +78,4 @@ MonoBehaviour:
   m_Name: iPhone Settings
   m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRGeneralSettings
   m_LoaderManagerInstance: {fileID: 854742794676669502}
-  m_InitManagerOnStart: 1
+  m_InitManagerOnStart: 0

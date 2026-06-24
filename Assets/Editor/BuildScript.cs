@@ -99,7 +99,7 @@ public static class BuildScript
             }
         }
 
-        settings.InitManagerOnStart = true;
+        settings.InitManagerOnStart = false;
         EditorUtility.SetDirty(perBuildTarget);
         EditorUtility.SetDirty(settings);
         if (manager != null) EditorUtility.SetDirty(manager);

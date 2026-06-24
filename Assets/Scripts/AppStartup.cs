@@ -43,7 +43,6 @@ public class AppStartup : MonoBehaviour
 
         if (status != 1)
         {
-            Debug.LogError("[VRPiano] Camera permission denied");
             ShowStatus(
                 "Camera access is required.\n\n" +
                 "Go to Settings > Privacy & Security > Camera\n" +
@@ -58,40 +57,44 @@ public class AppStartup : MonoBehaviour
         Debug.Log("[VRPiano] Camera permission granted");
         ShowStatus("Starting AR...");
 
-        // Ensure XR is initialized
         var xrSettings = XRGeneralSettings.Instance;
         if (xrSettings == null)
         {
-            Debug.LogError("[VRPiano] XRGeneralSettings.Instance is null");
-            ShowStatus("XR settings not found.\nThe build may be misconfigured.");
+            ShowStatus("XR settings not found.\nBuild may be misconfigured.");
             yield break;
         }
 
         var xrManager = xrSettings.Manager;
         if (xrManager == null)
         {
-            Debug.LogError("[VRPiano] XRManagerSettings is null");
-            ShowStatus("XR manager not found.\nThe build may be misconfigured.");
+            ShowStatus("XR manager not found.\nBuild may be misconfigured.");
             yield break;
         }
 
-        if (xrManager.activeLoader == null)
+        // Deinitialize first in case auto-init tried and failed
+        if (xrManager.isInitializationComplete)
         {
-            Debug.Log("[VRPiano] No active XR loader, initializing manually...");
-            yield return xrManager.InitializeLoader();
+            Debug.Log("[VRPiano] Deinitializing previous XR attempt...");
+            xrManager.DeinitializeLoader();
         }
+
+        Debug.Log($"[VRPiano] Initializing XR loader (loaders: {xrManager.activeLoaders.Count})...");
+        yield return xrManager.InitializeLoader();
 
         if (xrManager.activeLoader == null)
         {
-            Debug.LogError("[VRPiano] XR loader failed to initialize");
-            ShowStatus("ARKit failed to load.\nCheck device compatibility.");
+            Debug.LogError("[VRPiano] XR loader init failed");
+            ShowStatus(
+                "ARKit failed to initialize.\n\n" +
+                "Loaders configured: " + xrManager.activeLoaders.Count + "\n" +
+                "Device: " + SystemInfo.deviceModel + "\n" +
+                "OS: " + SystemInfo.operatingSystem);
             yield break;
         }
 
         Debug.Log($"[VRPiano] XR loader active: {xrManager.activeLoader.name}");
         xrManager.StartSubsystems();
 
-        // Now enable ARSession
         if (arSession != null)
             arSession.enabled = true;
 
@@ -103,20 +106,8 @@ public class AppStartup : MonoBehaviour
             yield return null;
         }
 
-        if (ARSession.state >= ARSessionState.Ready)
-        {
-            Debug.Log($"[VRPiano] AR ready, state: {ARSession.state}");
-            HideStatus();
-        }
-        else
-        {
-            Debug.LogWarning($"[VRPiano] AR state after {timeout}s: {ARSession.state}");
-            ShowStatus(
-                $"AR state: {ARSession.state}\n\n" +
-                "Trying to continue anyway...");
-            yield return new WaitForSeconds(2f);
-            HideStatus();
-        }
+        Debug.Log($"[VRPiano] AR state: {ARSession.state}");
+        HideStatus();
     }
 
     Text FindStatusText()
