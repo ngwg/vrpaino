@@ -10,6 +10,9 @@ public class ARPianoManager : MonoBehaviour
 
     ARRaycastManager raycastManager;
     ARPlaneManager planeManager;
+    ARAnchorManager anchorManager;
+    ARAnchor currentAnchor;
+
     GameObject placementIndicator;
     float stableTimer;
     float totalScanTime;
@@ -46,18 +49,20 @@ public class ARPianoManager : MonoBehaviour
     {
         if (placed) return;
 
-        // Lazy-find managers (they start disabled, enabled by AppStartup after XR is ready)
+        // Lazy-find managers (they start disabled, AppStartup enables them after XR is ready)
         if (raycastManager == null)
             raycastManager = FindAnyObjectByType<ARRaycastManager>();
         if (planeManager == null)
             planeManager = FindAnyObjectByType<ARPlaneManager>();
+        if (anchorManager == null)
+            anchorManager = FindAnyObjectByType<ARAnchorManager>();
 
         totalScanTime += Time.deltaTime;
 
-        // Fallback: if no planes detected after timeout, place in front of camera
+        // Fallback: if no surface found after timeout, place in front of camera
         if (totalScanTime >= FallbackTimeout)
         {
-            Debug.Log("[VRPiano] Plane detection timed out, using fallback placement");
+            Debug.Log("[VRPiano] Plane detection timed out — using fallback placement");
             FallbackPlace();
             return;
         }
@@ -70,22 +75,18 @@ public class ARPianoManager : MonoBehaviour
         {
             var hit = raycastHits[0];
             var hitPos = hit.pose.position;
-            var hitRot = hit.pose.rotation;
 
             if (!placementIndicator.activeSelf)
                 placementIndicator.SetActive(true);
 
             placementIndicator.transform.position = hitPos;
-            placementIndicator.transform.rotation = Quaternion.Euler(0, hitRot.eulerAngles.y, 0);
+            placementIndicator.transform.rotation = Quaternion.Euler(0, hit.pose.rotation.eulerAngles.y, 0);
 
             if (Vector3.Distance(hitPos, lastHitPosition) < StableThreshold)
             {
                 stableTimer += Time.deltaTime;
                 if (stableTimer >= StableTimeRequired)
-                {
-                    PlacePianoAt(hitPos);
-                    return;
-                }
+                    PlacePianoAt(hit);
             }
             else
             {
@@ -100,33 +101,31 @@ public class ARPianoManager : MonoBehaviour
             stableTimer = 0f;
         }
 
-        // Tap to place as backup
+        // Tap to place immediately
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             if (raycastManager.Raycast(Input.GetTouch(0).position, raycastHits, TrackableType.PlaneWithinPolygon))
-            {
-                PlacePianoAt(raycastHits[0].pose.position);
-            }
+                PlacePianoAt(raycastHits[0]);
         }
     }
 
-    void PlacePianoAt(Vector3 position)
+    async void PlacePianoAt(ARRaycastHit hit)
     {
+        // Guard against double-placement while async runs
+        if (placed) return;
+        placed = true;
+
         if (placementIndicator != null)
             Destroy(placementIndicator);
 
-        float yawToCamera = Quaternion.LookRotation(
+        float yaw = Quaternion.LookRotation(
             Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up)).eulerAngles.y;
 
-        transform.position = position + Vector3.up * (WhiteKeyHeight / 2f);
-        transform.rotation = Quaternion.Euler(0, yawToCamera, 0);
+        var pose = new Pose(
+            hit.pose.position + Vector3.up * (WhiteKeyHeight / 2f),
+            Quaternion.Euler(0, yaw, 0));
 
-        if (gameObject.GetComponent<ARAnchor>() == null)
-            gameObject.AddComponent<ARAnchor>();
-
-        SetPianoVisible(true);
-        placed = true;
-
+        // Stop plane detection now
         if (planeManager != null)
         {
             planeManager.requestedDetectionMode = PlaneDetectionMode.None;
@@ -134,28 +133,53 @@ public class ARPianoManager : MonoBehaviour
                 plane.gameObject.SetActive(false);
         }
 
-        Debug.Log($"[VRPiano] Piano placed at {position}");
+        if (anchorManager != null)
+        {
+            // TryAddAnchorAsync is the correct API in AR Foundation 6 —
+            // AddComponent<ARAnchor>() silently fails and disables the GO in 6.0.3
+            var result = await anchorManager.TryAddAnchorAsync(pose);
+            if (result.status.IsSuccess())
+            {
+                currentAnchor = result.value;
+                // Correct hierarchy: piano is a child of the anchor GO so ARKit moves it
+                transform.SetParent(currentAnchor.transform, false);
+                transform.localPosition = Vector3.zero;
+                transform.localRotation = Quaternion.identity;
+                Debug.Log($"[VRPiano] Anchor created, tracking={currentAnchor.trackingState}");
+            }
+            else
+            {
+                Debug.LogWarning($"[VRPiano] Anchor failed ({result.status}), falling back to free placement");
+                transform.SetPositionAndRotation(pose.position, pose.rotation);
+            }
+        }
+        else
+        {
+            transform.SetPositionAndRotation(pose.position, pose.rotation);
+        }
+
+        SetPianoVisible(true);
+        Debug.Log($"[VRPiano] Piano placed at {pose.position}");
     }
 
     void FallbackPlace()
     {
+        if (placed) return;
+        placed = true;
+
         if (placementIndicator != null)
             Destroy(placementIndicator);
-
-        Vector3 pos = cameraTransform.position
-            + cameraTransform.forward * 0.5f
-            + Vector3.up * -0.3f;
 
         float yaw = Quaternion.LookRotation(
             Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up)).eulerAngles.y;
 
-        transform.position = pos;
+        transform.position = cameraTransform.position
+            + cameraTransform.forward * 0.5f
+            + Vector3.up * -0.3f;
         transform.rotation = Quaternion.Euler(0, yaw, 0);
 
         SetPianoVisible(true);
-        placed = true;
-
-        Debug.Log($"[VRPiano] Piano fallback-placed at {pos}");
+        Debug.Log("[VRPiano] Piano fallback-placed (no surface detected)");
     }
 
     void SetPianoVisible(bool visible)
@@ -178,7 +202,6 @@ public class ARPianoManager : MonoBehaviour
         var shader = Shader.Find("Unlit/Color") ?? Shader.Find("Universal Render Pipeline/Unlit") ?? rend.material.shader;
         rend.material = new Material(shader);
         rend.material.color = new Color(0.2f, 1f, 0.4f, 1f);
-
         placementIndicator.SetActive(false);
     }
 
@@ -187,7 +210,6 @@ public class ARPianoManager : MonoBehaviour
         int totalWhiteKeys = 7 * Octaves;
         float totalWidth = totalWhiteKeys * WhiteKeyWidth;
         float startX = -totalWidth / 2f;
-
         int whiteIndex = 0;
         int noteIndex = 0;
 
@@ -196,11 +218,9 @@ public class ARPianoManager : MonoBehaviour
             for (int semi = 0; semi < 12; semi++)
             {
                 bool black = IsBlack[semi];
-                float xPos;
-
                 if (!black)
                 {
-                    xPos = startX + (whiteIndex + 0.5f) * WhiteKeyWidth;
+                    float xPos = startX + (whiteIndex + 0.5f) * WhiteKeyWidth;
                     var key = CreateKey(xPos, 0f, 0f, WhiteKeyWidth - 0.002f, WhiteKeyHeight, WhiteKeyDepth, false, noteIndex);
                     whiteKeys.Add(key);
                     allKeys.Add(key);
@@ -208,13 +228,11 @@ public class ARPianoManager : MonoBehaviour
                 }
                 else
                 {
-                    float lastWhiteX = startX + (whiteIndex - 0.5f) * WhiteKeyWidth;
-                    xPos = lastWhiteX;
+                    float xPos = startX + (whiteIndex - 0.5f) * WhiteKeyWidth;
                     var key = CreateKey(xPos, BlackKeyHeight / 2f, (WhiteKeyDepth - BlackKeyDepth) / 2f - 0.01f,
                         BlackKeyWidth, BlackKeyHeight, BlackKeyDepth, true, noteIndex);
                     allKeys.Add(key);
                 }
-
                 noteIndex++;
             }
         }

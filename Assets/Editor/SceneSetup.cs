@@ -2,6 +2,7 @@ using Unity.XR.CoreUtils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
@@ -40,11 +41,21 @@ public static class SceneSetup
         cam.clearFlags = CameraClearFlags.SolidColor;
         cam.backgroundColor = Color.black;
         cam.nearClipPlane = 0.01f;
-        cameraGo.AddComponent<TrackedPoseDriver>();
+        var tpd = cameraGo.AddComponent<TrackedPoseDriver>();
+        // Explicit bindings required when adding TrackedPoseDriver via code
+        var posAction = new InputAction("devicePosition", InputActionType.Value,
+            "<HandheldARInputDevice>/devicePosition");
+        var rotAction = new InputAction("deviceRotation", InputActionType.Value,
+            "<HandheldARInputDevice>/deviceRotation");
+        tpd.positionInput = new InputActionProperty(posAction);
+        tpd.rotationInput = new InputActionProperty(rotAction);
+        tpd.updateType = TrackedPoseDriver.UpdateType.BeforeRender;
         cameraGo.AddComponent<ARCameraManager>();
         cameraGo.AddComponent<ARCameraBackground>();
         xrOrigin.CameraFloorOffsetObject = offsetGo;
         xrOrigin.Camera = cam;
+        // 0 = no floor offset (phone AR, not VR floor mode)
+        xrOrigin.CameraYOffset = 0f;
 
         // AR Plane Detection (disabled until XR subsystems are ready)
         var planeManager = originGo.AddComponent<ARPlaneManager>();
