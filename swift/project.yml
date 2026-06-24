@@ -23,12 +23,3 @@ targets:
         CODE_SIGN_IDENTITY: ""
         ENABLE_BITCODE: "NO"
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"
-    dependencies:
-      - framework: ARKit.framework
-        embed: false
-      - framework: RealityKit.framework
-        embed: false
-      - framework: Metal.framework
-        embed: false
-      - framework: AVFoundation.framework
-        embed: false
