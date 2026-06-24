@@ -1,0 +1,45 @@
+workflows:
+  unity-ios-build:
+    name: Unity iOS Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      unity: 6000.5.0f1
+      xcode: latest
+      vars:
+        BUNDLE_ID: com.dovyllis.vrpaino
+    scripts:
+      - name: Build Unity iOS Xcode project
+        script: |
+          unity-editor \
+            -batchmode \
+            -nographics \
+            -quit \
+            -logFile /dev/stdout \
+            -projectPath . \
+            -buildTarget iOS \
+            -executeMethod BuildScript.BuildIOS
+
+      - name: Build unsigned IPA
+        script: |
+          cd Build/iOS
+          xcodebuild \
+            -project Unity-iPhone.xcodeproj \
+            -scheme Unity-iPhone \
+            -configuration Release \
+            -sdk iphoneos \
+            build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            -derivedDataPath DerivedData
+
+          APP_PATH=$(find DerivedData -name "*.app" | head -1)
+          mkdir -p Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r vrpaino.ipa Payload/
+          echo "Done: vrpaino.ipa"
+
+    artifacts:
+      - Build/iOS/vrpaino.ipa
